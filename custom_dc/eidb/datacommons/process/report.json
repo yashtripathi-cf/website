@@ -1,177 +1,217 @@
 {
   "status": "SUCCESS",
-  "startTime": "2026-06-06 12:36:56.315218",
-  "lastUpdate": "2026-06-06 12:37:08.047608",
+  "startTime": "2026-06-09 10:18:41.982992",
+  "lastUpdate": "2026-06-09 10:19:03.921923",
   "importFiles": {
     "/Users/yashtripathi/ndap-eidb/GDP_ANNUAL.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:56.320355",
-      "lastUpdate": "2026-06-06 12:36:57.001805"
+      "startTime": "2026-06-09 10:18:41.997209",
+      "lastUpdate": "2026-06-09 10:18:42.913337"
     },
     "/Users/yashtripathi/ndap-eidb/GDP_India_FirstAdvanced.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.004700",
-      "lastUpdate": "2026-06-06 12:36:57.024187"
+      "startTime": "2026-06-09 10:18:42.914283",
+      "lastUpdate": "2026-06-09 10:18:42.924296"
     },
     "/Users/yashtripathi/ndap-eidb/GSDP_CONSTANT.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.025827",
-      "lastUpdate": "2026-06-06 12:36:57.483031"
+      "startTime": "2026-06-09 10:18:42.924952",
+      "lastUpdate": "2026-06-09 10:18:43.458863"
     },
     "/Users/yashtripathi/ndap-eidb/GSDP_CURRENT.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.487991",
-      "lastUpdate": "2026-06-06 12:36:57.891379"
+      "startTime": "2026-06-09 10:18:43.461794",
+      "lastUpdate": "2026-06-09 10:18:44.002978"
     },
     "/Users/yashtripathi/ndap-eidb/GVA_AdvancedEstimates_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.893968",
-      "lastUpdate": "2026-06-06 12:36:57.911627"
+      "startTime": "2026-06-09 10:18:44.005827",
+      "lastUpdate": "2026-06-09 10:18:44.021212"
     },
     "/Users/yashtripathi/ndap-eidb/GVA_FristAdvanceEstimates_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.913280",
-      "lastUpdate": "2026-06-06 12:36:57.923656"
+      "startTime": "2026-06-09 10:18:44.021756",
+      "lastUpdate": "2026-06-09 10:18:44.029751"
     },
     "/Users/yashtripathi/ndap-eidb/GVA_ProvisionalEstimates_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.924843",
-      "lastUpdate": "2026-06-06 12:36:57.933833"
+      "startTime": "2026-06-09 10:18:44.030207",
+      "lastUpdate": "2026-06-09 10:18:44.038928"
     },
     "/Users/yashtripathi/ndap-eidb/GVA_SecondRevisedEstimates_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.934745",
-      "lastUpdate": "2026-06-06 12:36:57.961049"
+      "startTime": "2026-06-09 10:18:44.039662",
+      "lastUpdate": "2026-06-09 10:18:44.096451"
     },
     "/Users/yashtripathi/ndap-eidb/India_WorkerPopulationRatio_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:57.961929",
-      "lastUpdate": "2026-06-06 12:36:58.623754"
+      "startTime": "2026-06-09 10:18:44.096956",
+      "lastUpdate": "2026-06-09 10:18:45.067058"
     },
     "/Users/yashtripathi/ndap-eidb/State_wise_SDP-17032025_GSDP_Constant - custom_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:58.626750",
-      "lastUpdate": "2026-06-06 12:36:58.652823"
+      "startTime": "2026-06-09 10:18:45.068104",
+      "lastUpdate": "2026-06-09 10:18:45.085051"
     },
     "/Users/yashtripathi/ndap-eidb/State_wise_SDP-17032025_GSDP_Current - custom_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:58.654266",
-      "lastUpdate": "2026-06-06 12:36:58.668952"
+      "startTime": "2026-06-09 10:18:45.085563",
+      "lastUpdate": "2026-06-09 10:18:45.098785"
     },
     "/Users/yashtripathi/ndap-eidb/ThirdRevisedEstimates_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:58.669902",
-      "lastUpdate": "2026-06-06 12:36:58.676839"
+      "startTime": "2026-06-09 10:18:45.099118",
+      "lastUpdate": "2026-06-09 10:18:45.105482"
     },
     "/Users/yashtripathi/ndap-eidb/country_commodity_export.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:58.677620",
-      "lastUpdate": "2026-06-06 12:36:58.689543"
+      "startTime": "2026-06-09 10:18:45.106329",
+      "lastUpdate": "2026-06-09 10:18:45.122106"
     },
     "/Users/yashtripathi/ndap-eidb/mospi_asi_combined - mospi_asi_combined - mospi_asi_.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:58.690253",
-      "lastUpdate": "2026-06-06 12:36:59.213417"
+      "startTime": "2026-06-09 10:18:45.122661",
+      "lastUpdate": "2026-06-09 10:18:45.536858"
     },
     "/Users/yashtripathi/ndap-eidb/mospi_cpi_output.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:36:59.216172",
-      "lastUpdate": "2026-06-06 12:37:04.155141"
+      "startTime": "2026-06-09 10:18:45.537861",
+      "lastUpdate": "2026-06-09 10:18:54.759428"
     },
     "/Users/yashtripathi/ndap-eidb/mospi_nii.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.163135",
-      "lastUpdate": "2026-06-06 12:37:04.183972"
+      "startTime": "2026-06-09 10:18:54.831413",
+      "lastUpdate": "2026-06-09 10:18:54.884737"
     },
     "/Users/yashtripathi/ndap-eidb/msme_commodity_inr.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.184935",
-      "lastUpdate": "2026-06-06 12:37:04.310137"
+      "startTime": "2026-06-09 10:18:54.885781",
+      "lastUpdate": "2026-06-09 10:18:55.170894"
     },
     "/Users/yashtripathi/ndap-eidb/msme_country.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.311433",
-      "lastUpdate": "2026-06-06 12:37:04.864788"
+      "startTime": "2026-06-09 10:18:55.172178",
+      "lastUpdate": "2026-06-09 10:18:56.611142"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_census2011_pca_statewise.csv": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:18:56.616910",
+      "lastUpdate": "2026-06-09 10:18:58.437128"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_dengue_statewise.csv": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:18:58.437989",
+      "lastUpdate": "2026-06-09 10:18:59.501006"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_milk_pca_national.csv": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:18:59.502095",
+      "lastUpdate": "2026-06-09 10:18:59.513798"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_milk_production_national.csv": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:18:59.514634",
+      "lastUpdate": "2026-06-09 10:18:59.522085"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_milk_production_statewise.csv": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:18:59.522996",
+      "lastUpdate": "2026-06-09 10:18:59.537398"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_plfs_unemployment_statewise.csv": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:18:59.538145",
+      "lastUpdate": "2026-06-09 10:19:00.006889"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_tb_notifications_national.csv": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:19:00.007747",
+      "lastUpdate": "2026-06-09 10:19:00.016430"
     },
     "/Users/yashtripathi/ndap-eidb/niti_state_population.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.866704",
-      "lastUpdate": "2026-06-06 12:37:04.889965"
+      "startTime": "2026-06-09 10:19:00.017372",
+      "lastUpdate": "2026-06-09 10:19:00.050304"
     },
     "/Users/yashtripathi/ndap-eidb/niti_state_population_urban.csv": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.891270",
-      "lastUpdate": "2026-06-06 12:37:04.908568"
+      "startTime": "2026-06-09 10:19:00.051052",
+      "lastUpdate": "2026-06-09 10:19:00.071780"
     },
     "/Users/yashtripathi/ndap-eidb/India_WorkerPopulationRatio_output_stat_vars.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.908641",
-      "lastUpdate": "2026-06-06 12:37:04.924274"
+      "startTime": "2026-06-09 10:19:00.072010",
+      "lastUpdate": "2026-06-09 10:19:00.099563"
     },
     "/Users/yashtripathi/ndap-eidb/State_wise_SDP-17032025_GSDP_Current.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.924458",
-      "lastUpdate": "2026-06-06 12:37:04.925147"
+      "startTime": "2026-06-09 10:19:00.099955",
+      "lastUpdate": "2026-06-09 10:19:00.100771"
     },
     "/Users/yashtripathi/ndap-eidb/consolidated_statvars.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:04.925195",
-      "lastUpdate": "2026-06-06 12:37:05.015136"
+      "startTime": "2026-06-09 10:19:00.100816",
+      "lastUpdate": "2026-06-09 10:19:00.253113"
     },
     "/Users/yashtripathi/ndap-eidb/country_commodity_schema.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.016057",
-      "lastUpdate": "2026-06-06 12:37:05.092256"
+      "startTime": "2026-06-09 10:19:00.254417",
+      "lastUpdate": "2026-06-09 10:19:00.264373"
     },
     "/Users/yashtripathi/ndap-eidb/country_commodity_statvars.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.092436",
-      "lastUpdate": "2026-06-06 12:37:05.104071"
+      "startTime": "2026-06-09 10:19:00.264605",
+      "lastUpdate": "2026-06-09 10:19:00.493896"
     },
     "/Users/yashtripathi/ndap-eidb/hscodes.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.104247",
-      "lastUpdate": "2026-06-06 12:37:05.364164"
+      "startTime": "2026-06-09 10:19:00.494623",
+      "lastUpdate": "2026-06-09 10:19:00.938889"
     },
     "/Users/yashtripathi/ndap-eidb/mospi_asi_mospi_asi_stat_vars.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.366348",
-      "lastUpdate": "2026-06-06 12:37:05.373813"
+      "startTime": "2026-06-09 10:19:00.941765",
+      "lastUpdate": "2026-06-09 10:19:00.951148"
     },
     "/Users/yashtripathi/ndap-eidb/mospi_cpi_output_stat_vars.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.373905",
-      "lastUpdate": "2026-06-06 12:37:05.377676"
+      "startTime": "2026-06-09 10:19:00.951321",
+      "lastUpdate": "2026-06-09 10:19:00.958776"
     },
     "/Users/yashtripathi/ndap-eidb/mospi_nii_mospi_nii_schema.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.377750",
-      "lastUpdate": "2026-06-06 12:37:05.378284"
+      "startTime": "2026-06-09 10:19:00.959030",
+      "lastUpdate": "2026-06-09 10:19:00.959911"
     },
     "/Users/yashtripathi/ndap-eidb/mospi_nii_mospi_nii_stat_vars.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.378317",
-      "lastUpdate": "2026-06-06 12:37:05.379574"
+      "startTime": "2026-06-09 10:19:00.959971",
+      "lastUpdate": "2026-06-09 10:19:00.961959"
     },
     "/Users/yashtripathi/ndap-eidb/msme_schema.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.379618",
-      "lastUpdate": "2026-06-06 12:37:05.380168"
+      "startTime": "2026-06-09 10:19:00.962020",
+      "lastUpdate": "2026-06-09 10:19:00.962779"
+    },
+    "/Users/yashtripathi/ndap-eidb/ndap_new_statvars.mcf": {
+      "status": "SUCCESS",
+      "startTime": "2026-06-09 10:19:00.962868",
+      "lastUpdate": "2026-06-09 10:19:00.964102"
     },
     "/Users/yashtripathi/ndap-eidb/statvar_hierarchy.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.380218",
-      "lastUpdate": "2026-06-06 12:37:05.381025"
+      "startTime": "2026-06-09 10:19:00.964147",
+      "lastUpdate": "2026-06-09 10:19:00.965184"
     },
     "/Users/yashtripathi/ndap-eidb/statvar_memberof.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.381059",
-      "lastUpdate": "2026-06-06 12:37:05.403769"
+      "startTime": "2026-06-09 10:19:00.965249",
+      "lastUpdate": "2026-06-09 10:19:01.001865"
     },
     "/Users/yashtripathi/ndap-eidb/topic.mcf": {
       "status": "SUCCESS",
-      "startTime": "2026-06-06 12:37:05.404034",
-      "lastUpdate": "2026-06-06 12:37:05.407664"
+      "startTime": "2026-06-09 10:19:01.002307",
+      "lastUpdate": "2026-06-09 10:19:01.008252"
     }
   }
 }

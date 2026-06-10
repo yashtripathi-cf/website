@@ -46,8 +46,8 @@
     gtag('config', 'G-EC269TVQ3R');
   </script>
   <script>
-    globalThis.FEATURE_FLAGS = {{ config['FEATURE_FLAGS'] | tojson }};
-    globalThis.disableGoogleMaps = {{ config['DISABLE_GOOGLE_MAPS'] | tojson }};
+    globalThis.FEATURE_FLAGS = {{ config.get('FEATURE_FLAGS', {}) | tojson }};
+    globalThis.disableGoogleMaps = {{ config.get('DISABLE_GOOGLE_MAPS', false) | tojson }};
   </script>
 
   <title>{{ title }} - NDAP | National Data & Analytics Platform</title>
@@ -99,8 +99,8 @@
       max-width: 100%;
       padding: 0 24px;
     }
-    .ndap-gov-strip a { color: #cdd8ec; margin-left: 18px; text-decoration: none; }
-    .ndap-gov-strip a:hover { color: #fff; }
+    .ndap-gov-strip a { color: #a8c4e8; margin-left: 18px; text-decoration: none; }
+    .ndap-gov-strip a:hover { color: #fff; text-decoration: underline; }
 
     /* ── NDAP Header ── */
     #main-nav {
@@ -182,7 +182,7 @@
       background: var(--ndap-navy);
       color: #c4d1ea;
       font-family: 'Mulish', 'Segoe UI', sans-serif;
-      margin-top: 40px;
+      margin-top: 0;
     }
     .ndap-foot-top {
       display: flex;
@@ -201,8 +201,8 @@
     }
     .ndap-foot-links ul { list-style: none; padding: 0; }
     .ndap-foot-links ul li { margin-bottom: 8px; font-size: 13px; }
-    .ndap-foot-links ul a { color: #c4d1ea; text-decoration: none; }
-    .ndap-foot-links ul a:hover { color: #fff; }
+    .ndap-foot-links ul a { color: #7eb8ff; text-decoration: none; }
+    .ndap-foot-links ul a:hover { color: #fff; text-decoration: underline; }
     .ndap-foot-bottom {
       border-top: 1px solid rgba(255,255,255,0.14);
       padding: 14px 24px;
@@ -212,8 +212,8 @@
       flex-wrap: wrap;
       gap: 8px;
     }
-    .ndap-foot-bottom a { color: #c4d1ea; }
-    .ndap-foot-bottom a:hover { color: #fff; }
+    .ndap-foot-bottom a { color: #7eb8ff; }
+    .ndap-foot-bottom a:hover { color: #fff; text-decoration: underline; }
     .ndap-disclaimer {
       border-top: 1px solid rgba(255,255,255,0.1);
       padding: 16px 24px;
@@ -227,12 +227,7 @@
   <div class="ndap-gov-strip">
     <div class="strip-inner">
       <span>भारत सरकार | Government of India &nbsp;•&nbsp; NITI Aayog</span>
-      <nav>
-        <a href="#">Skip to Main Content</a>
-        <a href="#">Screen Reader Access</a>
-        <a href="#">A- A A+</a>
-        <a href="#">हिन्दी</a>
-      </nav>
+      <span></span>
     </div>
   </div>
 
@@ -293,9 +288,7 @@
           <h4>Quick Links</h4>
           <ul>
             <li><a href="{{ url_for('static.homepage') }}">Home</a></li>
-            <li><a href="{{ url_for('tools.download') }}">Download Data</a></li>
-            <li><a href="{{ url_for('tools.stat_var') }}">Variables</a></li>
-            <li><a href="/about">About NDAP</a></li>
+            <li><a href="/custom_dc/custom/dryrun_report.html" target="_blank">Dry Run Report</a></li>
           </ul>
         </div>
         <div class="ndap-foot-links">
@@ -303,7 +296,6 @@
           <ul>
             <li>NITI Aayog, Sansad Marg</li>
             <li>New Delhi — 110001, India</li>
-            <li><a href="mailto:ndap@gov.in">ndap[at]gov[dot]in</a></li>
           </ul>
         </div>
       </div>

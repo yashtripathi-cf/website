@@ -17,6 +17,20 @@ Average number of meals per household in rural area,Mean_Count_Meal_Rural_AsAFra
 Average number of meals per household in urban area,Mean_Count_Meal_Urban_AsAFractionOf_Count_Household
 Average number of meals per person in rural area,Mean_Count_Meal_Rural_AsAFractionOf_Count_Person
 Average number of meals per person in urban area,Mean_Count_Meal_Urban_AsAFractionOf_Count_Person
+Census 2011 — Children 0-6 years (State-wise),NDAP_Census2011_Children_0_6
+Census 2011 — Female Literate Population (State-wise),NDAP_Census2011_Literate_Female
+Census 2011 — Female Population (State-wise),NDAP_Census2011_Population_Female
+Census 2011 — Literate Population (State-wise),NDAP_Census2011_Literate_Total
+Census 2011 — Male Literate Population (State-wise),NDAP_Census2011_Literate_Male
+Census 2011 — Male Population (State-wise),NDAP_Census2011_Population_Male
+Census 2011 — Scheduled Caste Population (State-wise),NDAP_Census2011_SC_Population
+Census 2011 — Scheduled Tribe Population (State-wise),NDAP_Census2011_ST_Population
+Census 2011 — Total Population (State-wise),NDAP_Census2011_Population_Total
+Census 2011 — Total Workers (State-wise),NDAP_Census2011_Workers_Total
+Dengue Cases (National),NDAP_DengueCases_National
+Dengue Cases (State-wise),NDAP_DengueCases_Statewise
+Dengue Deaths (National),NDAP_DengueDeaths_National
+Dengue Deaths (State-wise),NDAP_DengueDeaths_Statewise
 Energy intake in rural area,DietaryIntake_Energy_Rural
 Energy intake in urban area,DietaryIntake_Energy_Urban
 Export of from India to the world.,Export_EconomicActivity_ExportSourceIndia_WorldTotal
@@ -2653,6 +2667,8 @@ Mean fixed capital per factory,Amount_EconomicActivity_Factory_FixedCapital_AsAF
 Mean gross value added per factory employee,Amount_EconomicActivity_Factory_GrossValueAdded_AsAFractionOf_Count_Person_Factory_TotalEngaged
 Mean number of factory employees per factory,Count_Person_Factory_TotalEngaged_AsAFractionOf_Count_Establishment_Factory
 Mean wages per factory employee,Wages_Worker_AsAFractionOf_Count_Worker
+Milk Production (National),NDAP_MilkProduction_National
+Milk Production (State-wise),NDAP_MilkProduction_Statewise
 Net value added by factories,NetValueAdded_EconomicActivity_Factory
 Number of basic metals factories,Count_Establishment_Factory_BasicMetals
 Number of beverages factories,Count_Establishment_Factory_Beverages
@@ -2689,6 +2705,7 @@ Number of waste and recovery factories,Count_Establishment_Factory_WasteAndRecov
 Number of wearing apparel factories,Count_Establishment_Factory_WearingApparel
 Number of wood and cork products factories,Count_Establishment_Factory_WoodAndCorkProducts
 Number of workers in factories,Count_Worker_Factory
+Per Capita Milk Availability,NDAP_MilkPCA_National
 Percentage of energy intake from cereal in rural area,DietaryIntake_Energy_Cereal_Rural_AsAFractionOf_DietaryIntake_Energy_Rural
 Percentage of energy intake from cereal in urban area,DietaryIntake_Energy_Cereal_Urban_AsAFractionOf_DietaryIntake_Energy_Urban
 Percentage of exports of abrasive powder or grain natural or artificial,Exports_EconomicActivity_AbrasivePowderOrGrainNaturalOrArtificialOnABas6805_AsAFractionOf_Exports_EconomicActivity
@@ -4007,6 +4024,7 @@ Protein intake in rural area,DietaryIntake_Protein_Rural
 Protein intake in urban area,DietaryIntake_Protein_Urban
 Rate of change of export from India,GrowthRate_Exports_EconomicActivity_ExportSourceIndia
 Share of exports originating from India,Exports_EconomicActivity_ExportSourceIndia_AsAFractionOf_Export_EconomicActivity_ExportSourceIndia_WorldTotal
+TB Case Notifications (National),NDAP_TBNotifications_National
 Total compensation for factory workers,Amount_EconomicActivity_Factory_Emolument
 Total compensation for rural factory workers,Amount_EconomicActivity_Factory_Emolument_Rural
 Total compensation of basic material factory,Amount_EconomicActivity_Factory_Emolument_BasicMetals
@@ -4161,3 +4179,8 @@ Total output amount of wearing apparel factory,Amount_EconomicActivity_Factory_O
 Total output amount of wood and cork products factory,Amount_EconomicActivity_Factory_Output_WoodAndCorkProducts
 Total output for rural factory workers,Amount_EconomicActivity_Factory_Output_Rural
 Total output of factory,Amount_EconomicActivity_Factory_Output
+"Unemployment Rate (Female, Usual Status)",NDAP_UnemploymentRate_Female
+"Unemployment Rate (Male, Usual Status)",NDAP_UnemploymentRate_Male
+"Unemployment Rate (Rural, Usual Status)",NDAP_UnemploymentRate_Rural
+"Unemployment Rate (Total, Usual Status)",NDAP_UnemploymentRate_Total
+"Unemployment Rate (Urban, Usual Status)",NDAP_UnemploymentRate_Urban

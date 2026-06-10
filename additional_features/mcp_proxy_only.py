@@ -2076,6 +2076,22 @@ def chat_stream():
     history = data.get("history", [])
     existing_session_id = data.get("session_id")  # From follow-up messages
 
+    # Query chaining: For follow-up messages, prepend prior user queries to preserve
+    # specifics (years, entities) that get lost in vague follow-ups like "calculate using above data".
+    # Pattern: "Q1. Q2. Current query: Q3"
+    if history:
+        prior_user_queries = [
+            msg["parts"][0]["text"] for msg in history
+            if msg.get("role") == "user" and msg.get("parts")
+        ]
+        if prior_user_queries:
+            chain = ". ".join(prior_user_queries)
+            user_message_for_mcp = f"[Previous queries for context: {chain}]\n\nCurrent query: {user_message}"
+        else:
+            user_message_for_mcp = user_message
+    else:
+        user_message_for_mcp = user_message
+
     # Parse query parameters for config overrides
     query_params = {}
     secret_key = request.args.get("key", "")
@@ -2172,6 +2188,7 @@ def chat_stream():
         mcp_enabled = effective_config.get("mcp", {}).get("enabled", True)
         mcp_results = ""
         tool_calls_list = []
+        data_status = None
 
         if mcp_enabled and mcp_ready:
             yield f"data: {json.dumps({'status': 'mcp_start', 'message': 'Querying data tools...'})}\n\n"
@@ -2182,7 +2199,7 @@ def chat_stream():
             def run_mcp():
                 try:
                     mcp_result_holder['results'], mcp_result_holder['tool_calls'], mcp_result_holder['text'] = execute_mcp_tool_loop(
-                        user_message, history, session_logger=session_logger,
+                        user_message_for_mcp, history, session_logger=session_logger,
                         effective_config=effective_config,
                         thought_callback=lambda t: thought_callback(t, 'mcp'),
                         demo_mode=demo_mode
@@ -2306,7 +2323,10 @@ def chat_stream():
 
         # Build synthesis context with source labels for citations
         context_parts = []
-        if mcp_results:
+        # Only include MCP data results if actual data was found
+        # (avoids LLM mentioning "no data" when KB already answered the query)
+        mcp_has_data = data_status.get('has_data', True) if data_status else True
+        if mcp_results and mcp_has_data:
             # Format extracted sources as markdown links for synthesis
             mcp_sources = extract_provenance_from_mcp_results(tool_calls_list)
             if mcp_sources:
@@ -2316,8 +2336,11 @@ def chat_stream():
             context_parts.append(f"**DATA RESULTS [Sources: {source_links}]:**\n{mcp_results}")
         if kb_response:
             # Include document names from kb_sources for proper citation
-            kb_source_names = ", ".join([s['title'] for s in kb_sources]) if kb_sources else "Knowledge Base"
-            context_parts.append(f"**POLICY INFORMATION [Sources: {kb_source_names}]:**\n{kb_response}")
+            if kb_sources:
+                kb_source_names = ", ".join([s['title'] for s in kb_sources])
+                context_parts.append(f"**POLICY INFORMATION [Sources: {kb_source_names}]:**\n(IMPORTANT: When citing this information, use the actual document names listed above as source citations — NEVER use the generic label 'Knowledge Base'.)\n{kb_response}")
+            else:
+                context_parts.append(f"**POLICY INFORMATION:**\n{kb_response}")
 
         # Log synthesis start
         session_logger.log_synthesis_start(["MCP" if mcp_results else None, "KB" if kb_response else None])
@@ -2429,7 +2452,7 @@ Please provide a comprehensive response combining all available information."""
         cost_usd_est = (input_tokens_est * 0.075 + output_tokens_est * 0.30) / 1_000_000
 
         # Send final event with timing + cost info (GP-10)
-        yield f"data: {json.dumps({'chart_config': chart_config, 'done': True, 'duration_ms': round(total_duration_ms, 0), 'total_tokens': total_tokens_est, 'cost_usd': round(cost_usd_est, 6)})}\n\n"
+        yield f"data: {json.dumps({'chart_config': chart_config, 'done': True, 'duration_ms': round(total_duration_ms, 0), 'total_tokens': total_tokens_est, 'input_tokens': input_tokens_est, 'output_tokens': output_tokens_est, 'cost_usd': round(cost_usd_est, 6)})}\n\n"
 
     return Response(
         stream_with_context(generate()),
@@ -2692,6 +2715,29 @@ def get_all_logs_analytics() -> dict:
         "recent_queries": recent_queries,
         "generated_at": datetime.now().isoformat()
     }
+
+
+@app.route("/api/feedback", methods=["POST"])
+def submit_feedback():
+    """Store user feedback (thumbs up/down) for a response."""
+    data = request.get_json(silent=True) or {}
+    vote = data.get("vote")
+    session_id = data.get("session")
+    if not vote:
+        return jsonify({"error": "Missing vote"}), 400
+    # Append to feedback log file
+    feedback_entry = {
+        "vote": vote,
+        "session_id": session_id,
+        "text_preview": data.get("text", "")[:100],
+        "timestamp": datetime.now().isoformat()
+    }
+    feedback_path = Path("logs/feedback.jsonl")
+    feedback_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(feedback_path, "a") as f:
+        f.write(json.dumps(feedback_entry) + "\n")
+    logger.info(f"Feedback recorded: {vote} for session {session_id}")
+    return jsonify({"success": True})
 
 
 @app.route("/api/logs/analytics")

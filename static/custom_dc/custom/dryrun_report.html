@@ -245,12 +245,11 @@
 <div class="header">
   <div class="header-inner">
     <div>
-      <div class="sub">National Data &amp; Analytics Platform — CloudSufi PoC</div>
+      <div class="sub">National Data &amp; Analytics Platform</div>
       <h1>Demo Dry Run Report</h1>
     </div>
     <div class="meta">
       <strong>June 9, 2026 (Updated)</strong>
-      Run by: Yash Tripathi<br>
       Demo date: June 15–16, 2026
     </div>
   </div>
@@ -512,7 +511,7 @@
       <div class="pending-body">
         <strong>Issue:</strong> Niti Aayog promised official NDAP dataset delivery on June 9. Not yet received.<br><br>
         <strong>Impact:</strong> Demo must use only NDAP-shared data (per RFP rules). Current CSVs are from public GoI sources — acceptable if official data doesn't arrive.<br><br>
-        <strong>Owner:</strong> Saurabh Gupta (chase Niti Aayog)<br>
+        <strong>Owner:</strong> Management<br>
         <strong>Deadline:</strong> Must arrive by June 13 for ingestion + re-dry-run on June 14.
       </div>
     </div>
@@ -524,7 +523,7 @@
       <div class="pending-body">
         <strong>Issue:</strong> Sarvam AI model integration is fully coded and wired into proxy. API key not received yet.<br><br>
         <strong>Impact:</strong> Demo will run on Gemini Flash 2.5 (current). Sarvam is a bonus — stronger multilingual story for Hindi queries.<br><br>
-        <strong>Owner:</strong> Yash Tripathi (sarvam.ai)<br>
+        <strong>Owner:</strong> Engineering<br>
         <strong>Fallback:</strong> Gemini Flash handles Hindi fine (A2 passed — 77.6s).
       </div>
     </div>
@@ -535,7 +534,7 @@
       </div>
       <div class="pending-body">
         <strong>Issue:</strong> Niti Aayog requires names of 3 CloudSufi attendees for physical demo on June 15–16.<br><br>
-        <strong>Owner:</strong> Saurabh Gupta<br>
+        <strong>Owner:</strong> Management<br>
         <strong>Action:</strong> Confirm names + share with Niti Aayog event coordinator by June 12.<br><br>
         <strong>Note:</strong> Physical attendance required — online participation not confirmed as option.
       </div>
@@ -548,7 +547,7 @@
       <div class="pending-body">
         <strong>Status:</strong> Data exists in India TB Report 2024 PDF. Extraction pending.<br><br>
         <strong>Value:</strong> Enhances TB query support — currently only national-level data (2018–2023).<br><br>
-        <strong>Owner:</strong> Yash Tripathi<br>
+        <strong>Owner:</strong> Engineering<br>
         <strong>Timeline:</strong> 1 hour. Non-blocking for demo.
       </div>
     </div>
@@ -560,7 +559,7 @@
       <div class="pending-body">
         <strong>Status:</strong> Dry run script ready at <code>/tmp/ndap_dryrun.py</code>.<br><br>
         <strong>Purpose:</strong> Final validation after NDAP dataset ingestion (if received). Confirm all 14 queries still pass on demo hardware.<br><br>
-        <strong>Owner:</strong> Yash Tripathi<br>
+        <strong>Owner:</strong> Engineering<br>
         <strong>Time needed:</strong> ~11 minutes to run. Review: 20 minutes.
       </div>
     </div>
@@ -582,43 +581,43 @@
       <tbody>
         <tr style="border-bottom: 1px solid var(--border); background: #f6fff9;">
           <td style="padding: 10px 14px;">Dengue CSV unavailable</td>
-          <td style="padding: 10px 14px; color: var(--muted);">Yash</td>
+          <td style="padding: 10px 14px; color: var(--muted);">Engineering</td>
           <td style="padding: 10px 14px; color: var(--green); font-weight: 600;">DONE ✓</td>
           <td style="padding: 10px 14px;">NCVBDC CSV ingested Jun 9. 368 obs, 35 states/UTs, 2021–2025. All dengue queries now return live data. Annexure I Q1 fully unblocked.</td>
         </tr>
         <tr style="border-bottom: 1px solid var(--border);">
           <td style="padding: 10px 14px;">Official NDAP dataset not received</td>
-          <td style="padding: 10px 14px; color: var(--muted);">Saurabh</td>
+          <td style="padding: 10px 14px; color: var(--muted);">Management</td>
           <td style="padding: 10px 14px; color: var(--red); font-weight: 600;">Jun 13</td>
           <td style="padding: 10px 14px;">Current 23 datasets from public GoI sources (MoSPI, DAHD, PLFS) are all official government data — acceptable if evaluators confirm. Chase daily. If received, re-ingest in &lt;2 hours and re-run dry run.</td>
         </tr>
         <tr style="border-bottom: 1px solid var(--border);">
           <td style="padding: 10px 14px;">Sarvam API key missing</td>
-          <td style="padding: 10px 14px; color: var(--muted);">Yash</td>
+          <td style="padding: 10px 14px; color: var(--muted);">Engineering</td>
           <td style="padding: 10px 14px; color: var(--yellow); font-weight: 600;">Jun 13</td>
           <td style="padding: 10px 14px;">Demo uses Gemini Flash 2.5. Hindi query (A2) already passed. If Sarvam key arrives, enable and re-test A2. If not: no change to demo script.</td>
         </tr>
         <tr style="border-bottom: 1px solid var(--border);">
           <td style="padding: 10px 14px;">4 queries &gt;60s response time</td>
-          <td style="padding: 10px 14px; color: var(--muted);">Yash</td>
+          <td style="padding: 10px 14px; color: var(--muted);">Engineering</td>
           <td style="padding: 10px 14px; color: var(--yellow); font-weight: 600;">Jun 14</td>
           <td style="padding: 10px 14px;">Presenter script prepared (see table above). All 4 are demonstrably complex queries — latency is explainable. MCP server warm-up: run one dummy query before demo starts to eliminate cold-start delay.</td>
         </tr>
         <tr style="border-bottom: 1px solid var(--border);">
           <td style="padding: 10px 14px;">Data sovereignty concern (Gemini = US servers)</td>
-          <td style="padding: 10px 14px; color: var(--muted);">Saurabh / Yash</td>
+          <td style="padding: 10px 14px; color: var(--muted);">Team</td>
           <td style="padding: 10px 14px; color: var(--muted);">Jun 15</td>
           <td style="padding: 10px 14px;">Addressed in Methodology Document (NDAP_Methodology.md). PoC uses Gemini for speed; production will use Gemma 3 27B via Ollama, fully on-premise. Evaluators confirmed they understand PoC vs Production distinction.</td>
         </tr>
         <tr style="border-bottom: 1px solid var(--border);">
           <td style="padding: 10px 14px;">Attendee names not submitted</td>
-          <td style="padding: 10px 14px; color: var(--muted);">Saurabh</td>
+          <td style="padding: 10px 14px; color: var(--muted);">Management</td>
           <td style="padding: 10px 14px; color: var(--red); font-weight: 600;">Jun 12</td>
           <td style="padding: 10px 14px;">Share 3 names + employee IDs to Niti Aayog event coordinator. No fallback — physical presence required.</td>
         </tr>
         <tr>
           <td style="padding: 10px 14px;">Final dry run not done on demo hardware</td>
-          <td style="padding: 10px 14px; color: var(--muted);">Yash</td>
+          <td style="padding: 10px 14px; color: var(--muted);">Engineering</td>
           <td style="padding: 10px 14px; color: var(--yellow); font-weight: 600;">Jun 14</td>
           <td style="padding: 10px 14px;">Run <code>python3 /tmp/ndap_dryrun.py</code> on June 14 evening. Must pass 14/14 before demo day. Dry run takes ~11 minutes.</td>
         </tr>
@@ -779,10 +778,10 @@
 <!-- ── Footer ── -->
 <div class="footer" style="border-top: 1px solid var(--border);">
   <div>
-    <strong>NDAP Demo — Dry Run Report</strong> &nbsp;|&nbsp; Generated June 9, 2026 &nbsp;|&nbsp; CloudSufi
+    <strong>NDAP Demo — Dry Run Report</strong> &nbsp;|&nbsp; Generated June 9, 2026
   </div>
   <div>
-    Yash Tripathi — yash.tripathi@cloudsufi.com &nbsp;|&nbsp; Demo date: June 15–16, 2026
+    Demo date: June 15–16, 2026
   </div>
 </div>
 

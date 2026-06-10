@@ -677,13 +677,13 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       --google-grey-500: #9AA0A6;
 
       /* Primary UI Colors (NDAP palette) */
-      --gov-blue: #2450a8;
-      --gov-blue-light: #3d6bc9;
-      --gov-blue-dark: #1a3a7a;
+      --gov-blue: #14284b;
+      --gov-blue-light: #1d3a6e;
+      --gov-blue-dark: #0e1d38;
       --saffron: #f6821f;
       --white: #FFFFFF;
       --green: #34A853;
-      --chakra-blue: #2450a8;
+      --chakra-blue: #14284b;
       --text-dark: #3C4043;
       --text-muted: #9AA0A6;
       --bg-light: #f8f9fa;
@@ -1594,7 +1594,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       font-family: inherit;
       text-align: left;
       text-decoration: none;
-      color: #2450a8; /* NDAP Blue */
+      color: #14284b; /* NDAP Blue */
       transition: opacity 0.2s ease;
     }
 
@@ -2450,6 +2450,185 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         height: 18px;
       }
     }
+
+    /* ── Feedback Buttons (thumbs up/down per message) ── */
+    .message-feedback {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .message:hover .message-feedback,
+    .message-feedback.voted {
+      opacity: 1;
+    }
+    .feedback-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .feedback-btn:hover {
+      border-color: var(--gov-blue);
+      color: var(--gov-blue);
+    }
+    .feedback-btn.active {
+      background: var(--gov-blue);
+      color: white;
+      border-color: var(--gov-blue);
+    }
+    .feedback-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ── Chat History Sidebar ── */
+    .chat-history-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: transparent;
+      color: var(--gov-blue);
+      border: 1px solid var(--gov-blue);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      position: relative;
+    }
+    .chat-history-btn:hover {
+      background: var(--gov-blue);
+      color: white;
+    }
+    .chat-history-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+    .chat-history-btn .history-count {
+      background: var(--gov-blue);
+      color: white;
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      border-radius: 8px;
+      min-width: 16px;
+      text-align: center;
+    }
+    .chat-history-btn:hover .history-count {
+      background: white;
+      color: var(--gov-blue);
+    }
+    .history-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 280px;
+      max-height: 360px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .history-dropdown.open {
+      display: block;
+    }
+    .history-dropdown-header {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-dropdown-header .clear-all {
+      font-size: 0.72rem;
+      color: #dc3545;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .history-dropdown-header .clear-all:hover {
+      text-decoration: underline;
+    }
+    .history-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .history-item:hover {
+      background: var(--hover-bg, #f5f7fa);
+    }
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    .history-item-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .history-item-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .history-item-delete {
+      color: #dc3545;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .history-item:hover .history-item-delete {
+      opacity: 1;
+    }
+    .history-empty {
+      padding: 20px 14px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 480px) {
+      .chat-history-btn {
+        padding: 6px;
+        font-size: 0;
+      }
+      .chat-history-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+      .chat-history-btn .history-count {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        font-size: 0.6rem;
+      }
+      .history-dropdown {
+        min-width: 240px;
+        right: -40px;
+      }
+    }
   </style>
 {% endblock %}
 
@@ -2487,11 +2666,11 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .lp-brand-text small { font-size: 10.5px; color: #5b6b82; display: block; }
     .lp-nav-links { display: flex; align-items: center; gap: 24px; font-weight: 700; font-size: 15px; color: #14284b; }
     .lp-nav-links a { padding: 6px 0; border-bottom: 2.5px solid transparent; transition: .2s; }
-    .lp-nav-links a:hover { color: #2450a8; border-color: #f6821f; }
+    .lp-nav-links a:hover { color: #14284b; border-color: #f6821f; }
     .lp-nav-cta { display: flex; gap: 10px; align-items: center; }
-    .lp-btn-outline { border: 2px solid #2450a8; color: #2450a8; background: #fff; border-radius: 8px; font: 800 14px 'Mulish', sans-serif; padding: 9px 18px; cursor: pointer; transition: .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .lp-btn-outline { border: 2px solid #14284b; color: #14284b; background: #fff; border-radius: 8px; font: 800 14px 'Mulish', sans-serif; padding: 9px 18px; cursor: pointer; transition: .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
     .lp-btn-outline:hover { background: #e9f0fb; }
-    .lp-btn-solid { background: #2450a8; color: #fff; border: 2px solid #2450a8; border-radius: 8px; font: 800 14px 'Mulish', sans-serif; padding: 9px 18px; cursor: pointer; transition: .2s; display: inline-flex; align-items: center; gap: 6px; }
+    .lp-btn-solid { background: #14284b; color: #fff; border: 2px solid #14284b; border-radius: 8px; font: 800 14px 'Mulish', sans-serif; padding: 9px 18px; cursor: pointer; transition: .2s; display: inline-flex; align-items: center; gap: 6px; }
     .lp-btn-solid:hover { background: #1a3a7a; }
 
     /* Hero */
@@ -2536,14 +2715,14 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .lp-sec-head h2 { font-size: 28px; font-weight: 800; color: #14284b; }
     .lp-sec-head h2 span { color: #f6821f; }
     .lp-sec-head p { color: #5b6b82; max-width: 520px; font-size: 14.5px; }
-    .lp-link-all { font-weight: 700; color: #2450a8; white-space: nowrap; font-size: 14.5px; }
+    .lp-link-all { font-weight: 700; color: #14284b; white-space: nowrap; font-size: 14.5px; }
     .lp-link-all:hover { text-decoration: underline; }
 
     /* Sectors */
     .lp-sectors { background: #f5f8fc; }
     .lp-sector-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
     .lp-sector-card { background: #fff; border: 1px solid #e3e9f2; border-radius: 10px; padding: 20px 16px; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 14.5px; color: #14284b; transition: .2s; box-shadow: 0 1px 4px rgba(20,40,75,.04); cursor: default; }
-    .lp-sector-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(20,40,75,.14); border-color: #2450a8; }
+    .lp-sector-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(20,40,75,.14); border-color: #14284b; }
     .lp-sector-card .lp-ic { flex: none; width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; background: #e9f0fb; }
 
     /* Sources */
@@ -2558,10 +2737,10 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .lp-ds-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
     .lp-ds-card { background: #fff; border: 1px solid #e3e9f2; border-left: 4px solid #f6821f; border-radius: 10px; padding: 18px; transition: .2s; display: flex; flex-direction: column; gap: 10px; cursor: default; }
     .lp-ds-card:hover { box-shadow: 0 10px 30px rgba(20,40,75,.14); transform: translateY(-3px); }
-    .lp-ds-card .lp-tag { align-self: flex-start; background: #e9f0fb; color: #2450a8; font-size: 11px; font-weight: 800; border-radius: 6px; padding: 3px 10px; letter-spacing: .4px; text-transform: uppercase; }
+    .lp-ds-card .lp-tag { align-self: flex-start; background: #e9f0fb; color: #14284b; font-size: 11px; font-weight: 800; border-radius: 6px; padding: 3px 10px; letter-spacing: .4px; text-transform: uppercase; }
     .lp-ds-card h3 { font-size: 15.5px; font-weight: 800; color: #14284b; line-height: 1.4; }
     .lp-ds-card .lp-meta { font-size: 12px; color: #5b6b82; font-weight: 600; }
-    .lp-ds-card .lp-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e3e9f2; padding-top: 12px; font-size: 12.5px; font-weight: 800; color: #2450a8; }
+    .lp-ds-card .lp-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e3e9f2; padding-top: 12px; font-size: 12.5px; font-weight: 800; color: #14284b; }
 
     /* Features */
     .lp-features { background: #14284b; color: #fff; }
@@ -2624,12 +2803,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     <div class="lp-gov-strip">
       <div class="lp-container">
         <span>भारत सरकार | Government of India &nbsp;•&nbsp; NITI Aayog</span>
-        <nav>
-          <a href="#">Skip to Main Content</a>
-          <a href="#">Screen Reader Access</a>
-          <a href="#">A- A A+</a>
-          <a href="#">हिन्दी</a>
-        </nav>
+        <span></span>
       </div>
     </div>
 
@@ -2969,6 +3143,25 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             </svg>
             Export Chat
           </button>
+          <div style="position:relative; display:inline-block;">
+            <button class="chat-history-btn" id="chat-history-btn" title="Chat history">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              History
+              <span class="history-count" id="history-count" style="display:none;">0</span>
+            </button>
+            <div class="history-dropdown" id="history-dropdown">
+              <div class="history-dropdown-header">
+                <span>Chat History</span>
+                <span class="clear-all" id="clear-all-history">Clear All</span>
+              </div>
+              <div id="history-list">
+                <div class="history-empty">No saved conversations</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2976,9 +3169,11 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         <div class="chat-messages" id="chat-messages">
           <div class="welcome-message" id="welcome-message">
             <div class="suggestions">
-              <button class="suggestion" data-text="Has factory employment grown faster than GDP in the last 5 years?" disabled>Has factory employment grown faster than GDP in the last 5 years?</button>
-              <button class="suggestion" data-text="Track food inflation alongside agricultural export growth" disabled>Track food inflation alongside agricultural export growth</button>
-              <button class="suggestion" data-text="Compare North vs South India: GSDP, factory count, and inflation" disabled>Compare North vs South India: GSDP, factory count, and inflation</button>
+              <button class="suggestion" data-text="Compare milk production across all states of India from 2001 to 2023" disabled>Compare milk production across all states of India from 2001 to 2023</button>
+              <button class="suggestion" data-text="बिहार में NFHS-5 के अनुसार बाल पोषण की स्थिति क्या है?" disabled>बिहार में NFHS-5 के अनुसार बाल पोषण की स्थिति क्या है?</button>
+              <button class="suggestion" data-text="Show dengue cases and deaths across all states from 2021 to 2024" disabled>Show dengue cases and deaths across all states from 2021 to 2024</button>
+              <button class="suggestion" data-text="Compare unemployment rates: Maharashtra, Kerala, Bihar, Jharkhand" disabled>Compare unemployment rates: Maharashtra, Kerala, Bihar, Jharkhand</button>
+              <button class="suggestion" data-text="What will India's GDP be in 2030?" disabled>What will India's GDP be in 2030?</button>
             </div>
           </div>
         </div>
@@ -3082,7 +3277,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             <select id="backend-model-select" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 8px; background: white; color: var(--text-dark); font-size: 0.85rem; cursor: pointer;">
               <option value="">Auto (default from config.json)</option>
               <option value="gemini">Gemini 3 Flash</option>
-              <option value="openrouter">OpenRouter — Gemma 3 27B</option>
+              <option value="openrouter">Gemma 3 27B</option>
               <option value="sarvam">Sarvam AI</option>
             </select>
           </div>
@@ -3314,7 +3509,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
       // Migration: Clear stale localhost proxy URLs when accessing from external IP
       // This ensures users get the correct dynamic URL based on their access method
-      const PROXY_URL_VERSION = 'proxy_url_v4';
+      const PROXY_URL_VERSION = 'proxy_url_v5';
       if (!localStorage.getItem(PROXY_URL_VERSION)) {
         const savedProxyUrl = localStorage.getItem('mcp_proxy_url') || '';
         const isLocalAccess = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -3359,6 +3554,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
       // Data status from last query (used for conditional follow-up heading)
       let currentDataStatus = null;
+      let currentKbAnswered = false;  // Whether KB provided sources for this query
 
       // Read URL query params for config overrides (for demo/presentation mode)
       const urlParams = new URLSearchParams(window.location.search);
@@ -4983,6 +5179,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         const newChatBtn = document.getElementById('new-chat-btn');
         if (newChatBtn) {
           newChatBtn.addEventListener('click', () => {
+            // Save current session before clearing
+            saveChatSession();
             // Clear chat messages
             chatMessages.innerHTML = '';
 
@@ -4990,9 +5188,11 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             const welcomeHtml = `
               <div class="welcome-message" id="welcome-message">
                 <div class="suggestions">
-                  <button class="suggestion" data-text="Has factory employment grown faster than GDP in the last 5 years?">Has factory employment grown faster than GDP in the last 5 years?</button>
-                  <button class="suggestion" data-text="Track food inflation alongside agricultural export growth">Track food inflation alongside agricultural export growth</button>
-                  <button class="suggestion" data-text="Compare North vs South India: GSDP, factory count, and inflation">Compare North vs South India: GSDP, factory count, and inflation</button>
+                  <button class="suggestion" data-text="Compare milk production across all states of India from 2001 to 2023">Compare milk production across all states of India from 2001 to 2023</button>
+                  <button class="suggestion" data-text="बिहार में NFHS-5 के अनुसार बाल पोषण की स्थिति क्या है?">बिहार में NFHS-5 के अनुसार बाल पोषण की स्थिति क्या है?</button>
+                  <button class="suggestion" data-text="Show dengue cases and deaths across all states from 2021 to 2024">Show dengue cases and deaths across all states from 2021 to 2024</button>
+                  <button class="suggestion" data-text="Compare unemployment rates: Maharashtra, Kerala, Bihar, Jharkhand">Compare unemployment rates: Maharashtra, Kerala, Bihar, Jharkhand</button>
+                  <button class="suggestion" data-text="What will India's GDP be in 2030?">What will India's GDP be in 2030?</button>
                 </div>
               </div>
             `;
@@ -5028,6 +5228,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
         // Initialize voice input
         initVoiceInput();
+        initChatHistory();
 
         // Initialize Dev Mode state: show tool activity by default for demo traceability
         // Can be hidden with ?dev=false in URL
@@ -5356,6 +5557,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
           let chartConfig = null;
           let durationMs = null;
           let totalTokens = null;
+          let inputTokens = null;
+          let outputTokens = null;
           let costUsd = null;
 
           while (true) {
@@ -5403,15 +5606,18 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                   console.log(`Thinking complete: ${data.thinking_complete}`);
                 }
 
+                // Handle KB sources (track for follow-up heading logic)
+                if (data.kb_sources && data.kb_sources.length > 0) {
+                  currentKbAnswered = true;
+                  console.log('KB sources received:', data.kb_sources.length);
+                }
+
                 // Handle data availability status (no data found)
                 // NOTE: In backend mode, we just log this - let synthesis handle the response
-                // The backend will programmatically append the data request link after synthesis
                 if (data.data_status) {
                   currentDataStatus = data.data_status;  // Store for conditional heading
                   if (!data.data_status.has_data) {
                     console.log('Data status: No data found -', data.data_status);
-                    // Don't override fullText here - synthesis will handle the response gracefully
-                    // and backend will append the data request link programmatically
                   }
                 }
 
@@ -5431,6 +5637,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                   console.log('Backend stream complete');
                   if (data.duration_ms) durationMs = data.duration_ms;
                   if (data.total_tokens) totalTokens = data.total_tokens;
+                  if (data.input_tokens) inputTokens = data.input_tokens;
+                  if (data.output_tokens) outputTokens = data.output_tokens;
                   if (data.cost_usd !== undefined) costUsd = data.cost_usd;
                 }
 
@@ -5446,7 +5654,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             }
           }
 
-          return { text: fullText, chartConfig, sessionId: currentConversationSessionId, durationMs, totalTokens, costUsd };
+          return { text: fullText, chartConfig, sessionId: currentConversationSessionId, durationMs, totalTokens, inputTokens, outputTokens, costUsd };
 
         } catch (err) {
           console.error('Backend chat stream error:', err);
@@ -5484,7 +5692,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
               <a id="download-log-btn"
                  href="${proxyBase}/api/logs/session/${sessionId}/download"
                  download="ndap_execution_log_${sessionId}.txt"
-                 style="font-size:0.72rem; padding:2px 8px; border-radius:4px; background:var(--ndap-blue,#2450a8); color:#fff; text-decoration:none; display:flex; align-items:center; gap:4px; white-space:nowrap;">
+                 style="font-size:0.72rem; padding:2px 8px; border-radius:4px; background:var(--ndap-blue,#14284b); color:#fff; text-decoration:none; display:flex; align-items:center; gap:4px; white-space:nowrap;">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7 10 12 15 17 10"/>
@@ -5991,6 +6199,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         // Start processing
         isProcessing = true;
         currentDataStatus = null;  // Reset data status for new message
+        currentKbAnswered = false;  // Reset KB status for new message
 
         // Setup abort controller for stop functionality
         console.log('DEBUG: Setting up abort controller');
@@ -6052,14 +6261,20 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
               const clockIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
               const coinIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
               const tokenIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`;
-              let html = `<span style="display:flex;align-items:center;gap:4px">${clockIcon} ${seconds}s</span>`;
-              if (result.totalTokens) {
+              let html = `<span style="display:flex;align-items:center;gap:4px" title="Total execution time (MCP + KB + Synthesis)">${clockIcon} ${seconds}s total</span>`;
+              if (result.inputTokens || result.outputTokens) {
+                const fmtTok = (n) => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n;
+                const inTok = result.inputTokens ? fmtTok(result.inputTokens) : '?';
+                const outTok = result.outputTokens ? fmtTok(result.outputTokens) : '?';
+                html += `<span style="display:flex;align-items:center;gap:4px" title="Input tokens: ~${result.inputTokens || 0}, Output tokens: ~${result.outputTokens || 0}">${tokenIcon} ~${inTok} in · ~${outTok} out</span>`;
+              } else if (result.totalTokens) {
                 const tokK = result.totalTokens >= 1000 ? (result.totalTokens / 1000).toFixed(1) + 'K' : result.totalTokens;
                 html += `<span style="display:flex;align-items:center;gap:4px">${tokenIcon} ~${tokK} tokens</span>`;
               }
               if (result.costUsd !== null && result.costUsd !== undefined) {
-                const costStr = result.costUsd < 0.001 ? `$${(result.costUsd * 1000).toFixed(3)}m` : `$${result.costUsd.toFixed(4)}`;
-                html += `<span style="display:flex;align-items:center;gap:4px" title="Estimated API cost (Gemini Flash pricing)">${coinIcon} ~${costStr} est.</span>`;
+                const costInr = result.costUsd * 95.36; // USD to INR (June 2026)
+                const costStr = costInr < 0.01 ? `₹${(costInr * 100).toFixed(2)} paise` : `₹${costInr.toFixed(2)}`;
+                html += `<span style="display:flex;align-items:center;gap:4px" title="Estimated API cost (Gemini Flash pricing, ~₹85/USD)">${coinIcon} ~${costStr} est.</span>`;
               }
               durationEl.innerHTML = html;
               messageEl.querySelector('.message-content').appendChild(durationEl);
@@ -6083,6 +6298,9 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             if (conversationHistory.length > 40) {
               conversationHistory = conversationHistory.slice(-30);
             }
+
+            // Save session to chat history
+            saveChatSession();
 
           } catch (err) {
             console.log('DEBUG: Caught error in backend mode:', err.name, err.message);
@@ -6594,7 +6812,7 @@ ${rawResultsJson}
             responseContent.innerHTML = formatMessage(currentText) + '<span class="streaming-cursor">▊</span>';
             chatMessages.scrollTop = chatMessages.scrollHeight;
           },
-          // Finalize the message (remove cursor)
+          // Finalize the message (remove cursor + add feedback buttons)
           finalize: () => {
             responseContent.innerHTML = formatMessage(currentText);
             // Update thinking badge if we have thoughts (no auto-collapse)
@@ -6602,6 +6820,37 @@ ${rawResultsJson}
               thinkingBadge.textContent = 'View reasoning';
               thinkingBadge.className = 'thinking-badge';
             }
+            // Add feedback buttons
+            const fbDiv = document.createElement('div');
+            fbDiv.className = 'message-feedback';
+            fbDiv.innerHTML = `
+              <button class="feedback-btn" data-vote="up" title="Good response">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              </button>
+              <button class="feedback-btn" data-vote="down" title="Poor response">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+              </button>
+            `;
+            fbDiv.querySelectorAll('.feedback-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                fbDiv.querySelectorAll('.feedback-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                fbDiv.classList.add('voted');
+                // Store feedback with session context
+                const feedbackData = { vote: btn.dataset.vote, text: currentText.substring(0, 100), ts: Date.now(), session: currentConversationSessionId };
+                const stored = JSON.parse(localStorage.getItem('ndap_feedback') || '[]');
+                stored.push(feedbackData);
+                localStorage.setItem('ndap_feedback', JSON.stringify(stored.slice(-100)));
+                // Send to backend if available
+                if (mcpProxyUrl && currentConversationSessionId) {
+                  fetch(`${mcpProxyUrl}/api/feedback`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(feedbackData)
+                  }).catch(() => {});
+                }
+              });
+            });
+            contentEl.appendChild(fbDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
           },
           // Get current text
@@ -6749,8 +6998,10 @@ ${rawResultsJson}
           ).join('');
 
           // Use conditional heading based on data availability
+          // Show normal follow-up heading if MCP has data OR KB answered the query
           const hasData = currentDataStatus ? currentDataStatus.has_data : true;
-          const followupHeading = hasData ? 'Follow up questions:' : 'Would you like to explore these instead?';
+          const effectivelyAnswered = hasData || currentKbAnswered;
+          const followupHeading = effectivelyAnswered ? 'Follow up questions:' : 'Would you like to explore these instead?';
 
           // Add container at end
           formatted += `<div class="followup-container"><div class="followup-heading">${followupHeading}</div>${suggestionsHtml}</div>`;
@@ -6921,6 +7172,153 @@ ${rawResultsJson}
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+      }
+
+      // ============================================================
+      // CHAT HISTORY — localStorage-based session persistence
+      // ============================================================
+      const CHAT_HISTORY_KEY = 'ndap_chat_sessions';
+      const MAX_SESSIONS = 20;
+
+      function getChatSessions() {
+        try { return JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY) || '[]'); }
+        catch { return []; }
+      }
+
+      function saveChatSession() {
+        if (conversationHistory.length < 2) return; // Need at least 1 Q&A pair
+        const sessions = getChatSessions();
+        const firstMsg = conversationHistory[0]?.parts?.[0]?.text || 'Untitled';
+        const title = firstMsg.substring(0, 60) + (firstMsg.length > 60 ? '...' : '');
+        const sessionData = {
+          id: currentConversationSessionId || `local_${Date.now()}`,
+          title: title,
+          messages: conversationHistory.slice(), // clone
+          timestamp: Date.now(),
+          messageCount: conversationHistory.length
+        };
+        // Update existing or add new
+        const idx = sessions.findIndex(s => s.id === sessionData.id);
+        if (idx >= 0) sessions[idx] = sessionData;
+        else sessions.unshift(sessionData);
+        // Trim to max
+        while (sessions.length > MAX_SESSIONS) sessions.pop();
+        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(sessions));
+        updateHistoryUI();
+      }
+
+      function loadChatSession(sessionId) {
+        const sessions = getChatSessions();
+        const session = sessions.find(s => s.id === sessionId);
+        if (!session) return;
+
+        // Clear current chat
+        chatMessages.innerHTML = '';
+        conversationHistory = [];
+        clearSessionId();
+        clearToolCalls();
+
+        // Replay messages into UI
+        session.messages.forEach(msg => {
+          const role = msg.role === 'user' ? 'user' : 'assistant';
+          const text = msg.parts?.[0]?.text || '';
+          addMessage(role, text);
+          conversationHistory.push(msg);
+        });
+
+        // Restore session ID
+        if (session.id && !session.id.startsWith('local_')) {
+          currentConversationSessionId = session.id;
+        }
+
+        // Close dropdown
+        document.getElementById('history-dropdown')?.classList.remove('open');
+
+        // Enable export
+        const exportBtn = document.getElementById('export-chat-btn');
+        if (exportBtn) exportBtn.disabled = false;
+      }
+
+      function deleteChatSession(sessionId) {
+        let sessions = getChatSessions();
+        sessions = sessions.filter(s => s.id !== sessionId);
+        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(sessions));
+        updateHistoryUI();
+      }
+
+      function clearAllChatSessions() {
+        localStorage.setItem(CHAT_HISTORY_KEY, '[]');
+        updateHistoryUI();
+      }
+
+      function updateHistoryUI() {
+        const sessions = getChatSessions();
+        const countEl = document.getElementById('history-count');
+        const listEl = document.getElementById('history-list');
+        if (!countEl || !listEl) return;
+
+        if (sessions.length > 0) {
+          countEl.style.display = 'inline';
+          countEl.textContent = sessions.length;
+        } else {
+          countEl.style.display = 'none';
+        }
+
+        if (sessions.length === 0) {
+          listEl.innerHTML = '<div class="history-empty">No saved conversations</div>';
+          return;
+        }
+
+        listEl.innerHTML = sessions.map(s => {
+          const date = new Date(s.timestamp);
+          const timeStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+          const turns = Math.floor((s.messageCount || 0) / 2);
+          return `<div class="history-item" data-id="${s.id}">
+            <div class="history-item-title">${escapeHtml(s.title)}</div>
+            <div class="history-item-meta">
+              <span>${timeStr} · ${turns} turn${turns !== 1 ? 's' : ''}</span>
+              <span class="history-item-delete" data-id="${s.id}">Delete</span>
+            </div>
+          </div>`;
+        }).join('');
+
+        // Attach click handlers
+        listEl.querySelectorAll('.history-item').forEach(item => {
+          item.addEventListener('click', (e) => {
+            if (e.target.classList.contains('history-item-delete')) {
+              e.stopPropagation();
+              deleteChatSession(e.target.dataset.id);
+              return;
+            }
+            loadChatSession(item.dataset.id);
+          });
+        });
+      }
+
+      function initChatHistory() {
+        const histBtn = document.getElementById('chat-history-btn');
+        const histDropdown = document.getElementById('history-dropdown');
+        const clearAllBtn = document.getElementById('clear-all-history');
+
+        if (histBtn && histDropdown) {
+          histBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            histDropdown.classList.toggle('open');
+          });
+          // Close on outside click
+          document.addEventListener('click', (e) => {
+            if (!histDropdown.contains(e.target) && e.target !== histBtn) {
+              histDropdown.classList.remove('open');
+            }
+          });
+        }
+        if (clearAllBtn) {
+          clearAllBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Delete all saved conversations?')) clearAllChatSessions();
+          });
+        }
+        updateHistoryUI();
       }
 
       // Initialize
