@@ -1945,6 +1945,8 @@ Data Results:
 {mcp_results if mcp_results else 'No data results'}
 
 Instructions:
+**CRITICAL — Year/Date Matching**: If the user's query mentions a specific year (e.g., "2023", "2021"), the chart MUST use that year in the date field. Do NOT default to the latest/most recent year. Match the year from the user query exactly.
+
 1. Extract variable DCIDs and place DCIDs from the results
 2. Analyze variable units from source_metadata and data scales from the values
 3. Group variables that can be meaningfully compared on the same Y-axis:
@@ -2244,9 +2246,11 @@ def chat_stream():
                 yield f"data: {json.dumps({'mcp_sources': mcp_sources})}\n\n"
 
             # Start chart config in background (runs parallel with KB + synthesis)
-            if mcp_results:
+            # Only generate charts if MCP actually found data (skip for KB-only answers)
+            mcp_has_data = data_status.get('has_data', True) if data_status else True
+            if mcp_results and mcp_has_data:
                 def run_chart_config():
-                    chart_result_holder['config'] = get_chart_config(mcp_results, user_message)
+                    chart_result_holder['config'] = get_chart_config(mcp_results, user_message_for_mcp)
                 chart_thread[0] = threading.Thread(target=run_chart_config)
                 chart_thread[0].start()
 

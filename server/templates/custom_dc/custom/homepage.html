@@ -5484,7 +5484,12 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             if (configInfo) {
               configInfo.innerHTML = `
                 <div><strong>Proxy:</strong> ${data.config.proxy_url || mcpProxyUrl}</div>
-                <div><strong>Model:</strong> ${data.config.gemini?.mcp_model || 'Not set'}</div>
+                <div><strong>Model:</strong> ${(() => {
+                  const sel = document.getElementById('backend-model-select')?.value;
+                  if (sel === 'openrouter') return data.config.openrouter?.mcp_model || 'Gemma 3 27B';
+                  if (sel === 'sarvam') return data.config.sarvam?.synthesis_model || 'Sarvam AI';
+                  return data.config.gemini?.mcp_model || 'Gemini Flash';
+                })()}</div>
                 <div><strong>MCP:</strong> ${data.config.mcp?.enabled ? 'Enabled' : 'Disabled'}</div>
                 <div><strong>KB:</strong> ${data.config.knowledge_base?.enabled ? 'Enabled' : 'Disabled'}</div>
                 <div><strong>API Key:</strong> ${data.config.has_api_key ? 'Configured' : 'Missing!'}</div>
