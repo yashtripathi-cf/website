@@ -1,0 +1,213 @@
+# StatVar definitions for Slums Compendium 2015 + NHM ROP datasets
+
+# === Slum Population ===
+Node: dcid:NDAP_SlumPopulation_Statewise
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:count
+name: "Slum Population (State-wise, Census 2011)"
+description: "Total slum population by state/UT as per Census of India 2011, from NBO Slum Compendium 2015"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumPctOfUrban_Statewise
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:percent
+name: "Slum Population as % of Urban Population (State-wise, Census 2011)"
+description: "Percentage of urban population living in slums by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+# === Slum Literacy ===
+Node: dcid:NDAP_SlumLiteracyRate_Total
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:literacyRate
+name: "Slum Literacy Rate - Total (State-wise, Census 2011)"
+description: "Literacy rate of slum population (persons) by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumLiteracyRate_Male
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:literacyRate
+gender: schema:Male
+name: "Slum Literacy Rate - Male (State-wise, Census 2011)"
+description: "Literacy rate of male slum population by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumLiteracyRate_Female
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:literacyRate
+gender: schema:Female
+name: "Slum Literacy Rate - Female (State-wise, Census 2011)"
+description: "Literacy rate of female slum population by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+# === Slum Work Participation ===
+Node: dcid:NDAP_SlumWorkParticipation_Total
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:workParticipationRate
+name: "Slum Work Participation Rate - Total (State-wise, Census 2011)"
+description: "Work participation rate of slum population (persons) by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumWorkParticipation_Male
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:workParticipationRate
+gender: schema:Male
+name: "Slum Work Participation Rate - Male (State-wise, Census 2011)"
+description: "Work participation rate of male slum population by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumWorkParticipation_Female
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:workParticipationRate
+gender: schema:Female
+name: "Slum Work Participation Rate - Female (State-wise, Census 2011)"
+description: "Work participation rate of female slum population by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+# === Slum Households ===
+Node: dcid:NDAP_SlumHouseholds_Total
+typeOf: dcs:StatisticalVariable
+populationType: dcs:Household
+measuredProperty: dcid:count
+name: "Slum Households - Total (State-wise, Census 2011)"
+description: "Total number of slum households by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHouseholdSize_Avg
+typeOf: dcs:StatisticalVariable
+populationType: dcs:Household
+measuredProperty: dcid:averageSize
+name: "Average Slum Household Size (State-wise, Census 2011)"
+description: "Average household size in slum areas by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+# === Slum Housing Condition ===
+Node: dcid:NDAP_SlumHousing_Good
+typeOf: dcs:StatisticalVariable
+populationType: dcs:HousingUnit
+measuredProperty: dcid:count
+name: "Slum Houses in Good Condition (State-wise, Census 2011)"
+description: "Number of slum census houses in good condition by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHousing_Livable
+typeOf: dcs:StatisticalVariable
+populationType: dcs:HousingUnit
+measuredProperty: dcid:count
+name: "Slum Houses in Livable Condition (State-wise, Census 2011)"
+description: "Number of slum census houses in livable condition by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHousing_Dilapidated
+typeOf: dcs:StatisticalVariable
+populationType: dcs:HousingUnit
+measuredProperty: dcid:count
+name: "Slum Houses in Dilapidated Condition (State-wise, Census 2011)"
+description: "Number of slum census houses in dilapidated condition by state/UT"
+memberOf: dcid:dc/g/NDAP_Slums
+
+# === Vital Rates ===
+Node: dcid:NDAP_BirthRate_Total
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:birthRate
+name: "Birth Rate - Total (State-wise, SRS 2013)"
+description: "Estimated birth rate per 1000 population by state/UT (Sample Registration System 2013)"
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+Node: dcid:NDAP_DeathRate_Total
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:deathRate
+name: "Death Rate - Total (State-wise, SRS 2013)"
+description: "Estimated death rate per 1000 population by state/UT (Sample Registration System 2013)"
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+Node: dcid:NDAP_NaturalGrowthRate_Total
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:naturalGrowthRate
+name: "Natural Growth Rate - Total (State-wise, SRS 2013)"
+description: "Natural growth rate (birth rate minus death rate) per 1000 population by state/UT"
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+Node: dcid:NDAP_InfantMortalityRate_Total
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:infantMortalityRate
+name: "Infant Mortality Rate - Total (State-wise, SRS 2013)"
+description: "Infant deaths per 1000 live births by state/UT (Sample Registration System 2013)"
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+# === Population Density ===
+Node: dcid:NDAP_PopulationDensity_Total
+typeOf: dcs:StatisticalVariable
+populationType: schema:Person
+measuredProperty: dcid:populationDensity
+name: "Population Density (State-wise, Census 2001-2011)"
+description: "Total population density per sq km by state/UT from Census of India"
+memberOf: dcid:dc/g/NDAP_Demographics
+
+# === NHM Allocations ===
+Node: dcid:NDAP_NHM_RCH_Allocation
+typeOf: dcs:StatisticalVariable
+populationType: schema:Thing
+measuredProperty: dcid:amount
+name: "NHM RCH Pool Allocation (Rs. Lakhs)"
+description: "National Health Mission - Reproductive & Child Health pool allocation in Rs. Lakhs"
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_NDCP_Allocation
+typeOf: dcs:StatisticalVariable
+populationType: schema:Thing
+measuredProperty: dcid:amount
+name: "NHM NDCP Pool Allocation (Rs. Lakhs)"
+description: "National Health Mission - National Disease Control Programme pool allocation in Rs. Lakhs"
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_NCD_Allocation
+typeOf: dcs:StatisticalVariable
+populationType: schema:Thing
+measuredProperty: dcid:amount
+name: "NHM NCD Pool Allocation (Rs. Lakhs)"
+description: "National Health Mission - Non-Communicable Disease pool allocation in Rs. Lakhs"
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_HSSU_Allocation
+typeOf: dcs:StatisticalVariable
+populationType: schema:Thing
+measuredProperty: dcid:amount
+name: "NHM HSS-Urban Pool Allocation (Rs. Lakhs)"
+description: "National Health Mission - Health System Strengthening Urban pool allocation in Rs. Lakhs"
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_HSSR_Allocation
+typeOf: dcs:StatisticalVariable
+populationType: schema:Thing
+measuredProperty: dcid:amount
+name: "NHM HSS-Rural Pool Allocation (Rs. Lakhs)"
+description: "National Health Mission - Health System Strengthening Rural pool allocation in Rs. Lakhs"
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_Total_Allocation
+typeOf: dcs:StatisticalVariable
+populationType: schema:Thing
+measuredProperty: dcid:amount
+name: "NHM Total ROP Allocation (Rs. Lakhs)"
+description: "National Health Mission - Total Record of Proceedings allocation in Rs. Lakhs"
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_NTEP_Allocation
+typeOf: dcs:StatisticalVariable
+populationType: schema:Thing
+measuredProperty: dcid:amount
+name: "NHM NTEP Allocation (Rs. Lakhs)"
+description: "National Health Mission - National Tuberculosis Elimination Programme (NTEP) allocation in Rs. Lakhs from state Record of Proceedings"
+memberOf: dcid:dc/g/NDAP_NHM

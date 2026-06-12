@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="white">
+  <!-- Stylized India map outline with @ target symbol -->
+  <g transform="translate(5, 2) scale(0.55)">
+    <!-- Simplified India map outline -->
+    <path d="M45,8 L52,5 L58,8 L62,6 L65,10 L70,12 L72,8 L78,10 L82,8 L85,12 L88,10 L92,14 L90,18 L93,22 L90,26 L92,30 L88,34 L90,38 L86,42 L88,46 L84,50 L80,48 L76,52 L72,50 L68,54 L64,52 L60,56 L56,60 L52,64 L48,68 L44,72 L40,76 L36,80 L32,84 L28,86 L24,82 L20,78 L18,74 L22,70 L20,66 L24,62 L22,58 L26,54 L24,50 L28,46 L26,42 L30,38 L28,34 L32,30 L30,26 L34,22 L32,18 L36,14 L34,10 L38,8 L42,10 Z"
+          fill="none" stroke="white" stroke-width="2" opacity="0.9"/>
+    <!-- @ target circles -->
+    <circle cx="55" cy="42" r="16" fill="none" stroke="white" stroke-width="2"/>
+    <circle cx="55" cy="42" r="8" fill="none" stroke="white" stroke-width="2"/>
+    <circle cx="55" cy="42" r="2.5" fill="white"/>
+  </g>
+  <!-- "ndap" text -->
+  <text x="68" y="42" font-family="'Mukta', 'Segoe UI', sans-serif" font-size="34" font-weight="700" fill="white" letter-spacing="1">ndap</text>
+</svg>

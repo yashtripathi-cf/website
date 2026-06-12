@@ -182,7 +182,7 @@ def apply_query_overrides(config: dict, query_params: dict) -> dict:
     # Deep copy to avoid modifying cached config
     effective = copy.deepcopy(config)
 
-    # Model override — handle named aliases ("openrouter", "sarvam", "gemini")
+    # Model override — handle named aliases ("openrouter", "sarvam", "gemini", "gemma4")
     # as well as explicit model IDs (e.g. "google/gemma-3-27b-it", "gemini-3-flash-preview")
     if query_params.get("model"):
         m = query_params["model"]
@@ -190,6 +190,8 @@ def apply_query_overrides(config: dict, query_params: dict) -> dict:
             # Force OpenRouter synthesis by ensuring the openrouter model is kept intact
             # and the gemini model is NOT overwritten with the alias string
             pass  # synthesis routing uses _or_key + _or_model from config
+        elif m == "gemma4":
+            pass  # synthesis routing uses gemma4 config
         elif m == "sarvam":
             pass  # synthesis routing uses _sv_key + _sv_model from config
         elif m == "gemini":
@@ -213,6 +215,312 @@ def apply_query_overrides(config: dict, query_params: dict) -> dict:
         effective["thinking"]["synthesis_level"] = query_params["synthesis_thinking"]
 
     return effective
+
+
+# ============================================================
+# INTENT-TO-DCID MAP — Skip search_indicators for known datasets
+# ============================================================
+# Maps keyword patterns to pre-resolved DCIDs so the MCP agent can
+# call get_observations directly instead of wasting iterations on
+# search_indicators (which returns empty for custom NDAP datasets).
+
+INTENT_DCID_MAP = [
+    # Dengue
+    {
+        "keywords": ["dengue"],
+        "dcids": {
+            "NDAP_DengueCases_Statewise": "State-wise dengue cases",
+            "NDAP_DengueDeaths_Statewise": "State-wise dengue deaths",
+            "NDAP_DengueCases_National": "National dengue cases",
+            "NDAP_DengueDeaths_National": "National dengue deaths",
+        },
+        "default_entity": "country/IND",
+    },
+    # TB / Tuberculosis
+    {
+        "keywords": ["tb", "tuberculosis", "ntep", "tb disease", "tb report", "tb survey",
+                      "dr-tb", "mdr-tb", "xdr-tb", "tb incidence", "tb prevalence",
+                      "tb mortality", "tb notification", "tb burden", "tb elimination",
+                      "disease surveillance"],
+        "dcids": {
+            "NDAP_TBNotifications_National": "National TB case notifications",
+            "NDAP_NHM_NTEP_Allocation": "NTEP budget allocation by state",
+        },
+        "default_entity": "country/IND",
+    },
+    # Milk production
+    {
+        "keywords": ["milk", "dairy", "milk production", "per capita milk",
+                      "dairy production", "agricultural production", "dahd", "nddb",
+                      "livestock", "animal husbandry", "milk yield"],
+        "dcids": {
+            "NDAP_MilkProduction_Statewise": "State-wise milk production (tonnes)",
+            "NDAP_MilkProduction_National": "National milk production (tonnes)",
+            "NDAP_MilkPCA_National": "Per capita milk availability (gms/day)",
+        },
+        "default_entity": "country/IND",
+    },
+    # Unemployment
+    {
+        "keywords": ["unemployment", "unemploy", "jobless", "plfs", "employment",
+                      "labour force", "labour survey", "lfpr", "worker ratio",
+                      "labour participation", "jobs", "labor force", "labor survey",
+                      "self-employment", "youth employment", "sectoral employment"],
+        "dcids": {
+            "NDAP_UnemploymentRate_Total": "Total unemployment rate",
+            "NDAP_UnemploymentRate_Male": "Male unemployment rate",
+            "NDAP_UnemploymentRate_Female": "Female unemployment rate",
+            "NDAP_UnemploymentRate_Rural": "Rural unemployment rate",
+            "NDAP_UnemploymentRate_Urban": "Urban unemployment rate",
+        },
+        "default_entity": "country/IND",
+    },
+    # Census 2011
+    {
+        "keywords": ["census", "population 2011", "literate", "literacy census",
+                      "sc population", "st population", "scheduled caste", "scheduled tribe",
+                      "census 2011", "demographic", "decennial census", "sex ratio",
+                      "population count", "household", "workforce", "rgi"],
+        "dcids": {
+            "NDAP_Census2011_Population_Total": "Census 2011 total population",
+            "NDAP_Census2011_Population_Male": "Census 2011 male population",
+            "NDAP_Census2011_Population_Female": "Census 2011 female population",
+            "NDAP_Census2011_Literate_Total": "Census 2011 literate population",
+            "NDAP_Census2011_SC_Population": "Census 2011 SC population",
+            "NDAP_Census2011_ST_Population": "Census 2011 ST population",
+            "NDAP_Census2011_Workers_Total": "Census 2011 total workers",
+            "NDAP_Census2011_Children_0_6": "Census 2011 children 0-6 years",
+        },
+        "default_entity": "country/IND",
+    },
+    # Slums
+    {
+        "keywords": ["slum", "slums", "urban housing", "informal settlement",
+                      "urban poor", "housing deprivation", "urban poverty",
+                      "urban inequality"],
+        "dcids": {
+            "NDAP_SlumPopulation_Statewise": "State-wise slum population",
+            "NDAP_SlumPctOfUrban_Statewise": "Slum % of urban population",
+            "NDAP_SlumLiteracyRate_Total": "Slum literacy rate (total)",
+            "NDAP_SlumLiteracyRate_Male": "Slum literacy rate (male)",
+            "NDAP_SlumLiteracyRate_Female": "Slum literacy rate (female)",
+            "NDAP_SlumWorkParticipation_Total": "Slum work participation (total)",
+            "NDAP_SlumHouseholds_Total": "Slum household count",
+            "NDAP_SlumHouseholdSize_Avg": "Average slum household size",
+            "NDAP_SlumHousing_Good": "Good condition slum housing",
+            "NDAP_SlumHousing_Livable": "Livable condition slum housing",
+            "NDAP_SlumHousing_Dilapidated": "Dilapidated slum housing",
+        },
+        "default_entity": "country/IND",
+    },
+    # Vital stats (birth/death/IMR)
+    {
+        "keywords": ["birth rate", "death rate", "infant mortality", "imr",
+                      "natural growth rate", "vital statistic", "vital stats",
+                      "vital statistics", "mortality rate", "life expectancy",
+                      "cdr", "mmr", "nmr", "death statistics", "child survival"],
+        "dcids": {
+            "NDAP_BirthRate_Total": "Birth rate per 1000",
+            "NDAP_DeathRate_Total": "Death rate per 1000",
+            "NDAP_NaturalGrowthRate_Total": "Natural growth rate per 1000",
+            "NDAP_InfantMortalityRate_Total": "Infant mortality rate per 1000 live births",
+        },
+        "default_entity": "country/IND",
+    },
+    # Population density
+    {
+        "keywords": ["population density", "density per", "population projections",
+                      "demographic projections", "population growth", "population forecast"],
+        "dcids": {
+            "NDAP_PopulationDensity_Total": "Population density per sq km",
+        },
+        "default_entity": "country/IND",
+    },
+    # NHM allocations
+    {
+        "keywords": ["nhm", "national health mission", "nhm allocation", "nhm budget",
+                      "health budget", "health allocation", "health infrastructure",
+                      "mohfw", "health expenditure", "ayushman bharat", "disease control",
+                      "pm-abhim"],
+        "dcids": {
+            "NDAP_NHM_RCH_Allocation": "NHM RCH allocation (Rs. Lakhs)",
+            "NDAP_NHM_NDCP_Allocation": "NHM NDCP allocation",
+            "NDAP_NHM_NCD_Allocation": "NHM NCD allocation",
+            "NDAP_NHM_HSSU_Allocation": "NHM HSS-Urban allocation",
+            "NDAP_NHM_HSSR_Allocation": "NHM HSS-Rural allocation",
+            "NDAP_NHM_Total_Allocation": "NHM total allocation",
+            "NDAP_NHM_NTEP_Allocation": "NHM NTEP allocation",
+        },
+        "default_entity": "country/IND",
+    },
+    # Immunization / NFHS health keywords (search_indicators always returns empty)
+    {
+        "keywords": ["immunization", "immunisation", "vaccination", "vaccine", "stunting",
+                      "wasting", "malnutrition", "nfhs", "anemia", "anaemia",
+                      "national family health survey", "family health", "fertility survey",
+                      "nutrition survey", "nfhs-5", "nfhs-6", "fertility rate",
+                      "contraceptive", "child health", "maternal health", "family planning",
+                      "breastfeeding", "institutional delivery", "health insurance"],
+        "dcids": {},  # No custom DCIDs — forces KB-only path
+        "default_entity": "country/IND",
+        "kb_only": True,
+    },
+    # NSS Health (KB-only — no custom DCIDs)
+    {
+        "keywords": ["nss", "health consumption", "health services", "health utilization",
+                      "health spending", "nss 75th", "schedule 25.0", "out-of-pocket",
+                      "healthcare access", "service utilization", "hospital visits",
+                      "doctor visits", "health financing"],
+        "dcids": {},
+        "default_entity": "country/IND",
+        "kb_only": True,
+    },
+    # Economic Survey (KB-only — no custom DCIDs)
+    {
+        "keywords": ["economic survey", "economic policy", "labour policy", "ai impact",
+                      "economic analysis", "gdp growth", "sectoral growth", "job impact",
+                      "labour market", "technological change", "economic transition",
+                      "skill gap", "ai era"],
+        "dcids": {},
+        "default_entity": "country/IND",
+        "kb_only": True,
+    },
+    # Air Quality (KB-only — no custom DCIDs)
+    {
+        "keywords": ["air quality", "air pollution", "aqi", "environmental health",
+                      "pollution", "pm2.5", "pm10", "nox", "so2", "cpcb",
+                      "pollution level", "air quality index", "respiratory disease",
+                      "pollution monitoring", "ambient air"],
+        "dcids": {},
+        "default_entity": "country/IND",
+        "kb_only": True,
+    },
+]
+
+
+def build_kb_retrieval_query(user_message: str, history: list) -> str:
+    """S3: Build an English retrieval query for KB from conversation history.
+
+    Hindi/Hinglish queries retrieve poorly from English document stores.
+    This constructs a concise English search string from the user's intent.
+    """
+    # Extract topic keywords from current + prior messages
+    all_text = user_message
+    if history:
+        prior = [msg["parts"][0]["text"] for msg in history
+                 if msg.get("role") == "user" and msg.get("parts")]
+        if prior:
+            all_text = " ".join(prior[-2:]) + " " + user_message  # Last 2 + current
+
+    # If already English (no Devanagari, no strong Hindi markers), return as-is
+    if not re.search(r'[\u0900-\u097F]', all_text):
+        hindi_words = re.findall(r'\b(mein|kya|hai|ka|ke|ki|ko|se|aur|nahi|kaise|batao|kitna|kitne|kitni|kahan|kaun|kab)\b', all_text.lower())
+        if len(hindi_words) < 3:
+            return user_message  # Mostly English
+
+    # Map common Hindi/Hinglish terms to English equivalents for retrieval
+    HINDI_EN_MAP = {
+        'dengue': 'dengue', 'malaria': 'malaria', 'tb': 'tuberculosis',
+        'stunting': 'stunting', 'tikakaran': 'immunization', 'teekakaran': 'immunization',
+        'jansankhya': 'population', 'abadi': 'population', 'berojgari': 'unemployment',
+        'dudh': 'milk production', 'doodh': 'milk production',
+        'swasthya': 'health', 'shiksha': 'education', 'gareebi': 'poverty',
+        'nfhs': 'NFHS health survey', 'bihar': 'Bihar', 'jharkhand': 'Jharkhand',
+        'rajasthan': 'Rajasthan', 'maharashtra': 'Maharashtra', 'up': 'Uttar Pradesh',
+        'bacchon': 'children', 'mahila': 'women', 'purush': 'men',
+        'aahar': 'nutrition', 'poshan': 'nutrition', 'kuposhan': 'malnutrition',
+    }
+
+    # Extract English keywords from the message
+    words = re.findall(r'\b\w+\b', all_text.lower())
+    en_keywords = []
+    for w in words:
+        if w in HINDI_EN_MAP:
+            en_keywords.append(HINDI_EN_MAP[w])
+        elif re.match(r'^[a-z]{3,}$', w) and w not in ('mein', 'kya', 'hai', 'ka', 'ke', 'ki', 'ko', 'se', 'aur', 'nahi', 'kaise', 'batao', 'kitna', 'kitne', 'kitni', 'kahan', 'kaun', 'kab', 'the', 'and', 'for', 'what', 'how', 'show'):
+            en_keywords.append(w)
+
+    if en_keywords:
+        return " ".join(dict.fromkeys(en_keywords))  # Deduplicated, order-preserved
+    return user_message
+
+
+def filter_kb_response_relevance(kb_response: str, kb_sources: list, user_message: str, history: list) -> tuple:
+    """S4: Topic-coherence filter — drop KB response if it's off-topic.
+
+    Compares keyword overlap between user query and KB response.
+    Returns (filtered_response, filtered_sources).
+    """
+    if not kb_response:
+        return kb_response, kb_sources
+
+    # Build topic keywords from user query + recent history
+    all_text = user_message.lower()
+    if history:
+        prior = [msg["parts"][0]["text"].lower() for msg in history
+                 if msg.get("role") == "user" and msg.get("parts")]
+        all_text += " " + " ".join(prior[-2:])
+
+    # Extract meaningful topic words (3+ chars, not stopwords)
+    STOPWORDS = {'the', 'and', 'for', 'what', 'how', 'show', 'tell', 'about', 'this', 'that',
+                 'with', 'from', 'will', 'can', 'has', 'have', 'been', 'are', 'was', 'were',
+                 'mein', 'kya', 'hai', 'ka', 'ke', 'ki', 'ko', 'se', 'aur', 'nahi', 'kaise',
+                 'batao', 'kitna', 'kitne', 'kitni', 'data', 'india', 'state', 'rate', 'total',
+                 'year', 'years', 'number', 'please', 'give', 'which', 'where', 'many', 'much'}
+    query_words = set(re.findall(r'\b[a-z]{3,}\b', all_text)) - STOPWORDS
+    kb_words = set(re.findall(r'\b[a-z]{3,}\b', kb_response.lower()))
+
+    if not query_words:
+        return kb_response, kb_sources
+
+    overlap = query_words & kb_words
+    overlap_ratio = len(overlap) / len(query_words) if query_words else 0
+
+    # If less than 15% keyword overlap, KB response is likely off-topic
+    if overlap_ratio < 0.15 and len(overlap) < 2:
+        logger.info(f"S4: KB response filtered (overlap={overlap_ratio:.2f}, words={overlap})")
+        return "", []
+
+    return kb_response, kb_sources
+
+
+def resolve_intent_dcids(user_message: str) -> dict:
+    """Match user message against INTENT_DCID_MAP.
+
+    Returns:
+        dict with keys:
+            matched: bool
+            dcids: dict of {dcid: description}
+            default_entity: str
+            kb_only: bool (if True, skip MCP data query entirely)
+            hint_text: str (formatted text to prepend to MCP message)
+    """
+    msg_lower = user_message.lower()
+    all_dcids = {}
+    default_entity = "country/IND"
+    kb_only = False
+
+    for entry in INTENT_DCID_MAP:
+        if any(kw in msg_lower for kw in entry["keywords"]):
+            all_dcids.update(entry["dcids"])
+            default_entity = entry.get("default_entity", default_entity)
+            if entry.get("kb_only"):
+                kb_only = True
+
+    if not all_dcids and not kb_only:
+        return {"matched": False, "dcids": {}, "default_entity": default_entity, "kb_only": False, "hint_text": ""}
+
+    if kb_only and not all_dcids:
+        return {"matched": True, "dcids": {}, "default_entity": default_entity, "kb_only": True, "hint_text": ""}
+
+    # Build hint text for MCP agent
+    lines = ["[PRE-RESOLVED VARIABLE HINTS — skip search_indicators, use get_observations directly with these DCIDs:]"]
+    for dcid, desc in all_dcids.items():
+        lines.append(f"  - {dcid}: {desc}")
+    lines.append(f"[Default entity: {default_entity}. Use date='all' for full time series.]")
+    hint_text = "\n".join(lines)
+
+    return {"matched": True, "dcids": all_dcids, "default_entity": default_entity, "kb_only": kb_only, "hint_text": hint_text}
 
 
 # ============================================================
@@ -738,6 +1046,7 @@ def extract_provenance_from_mcp_results(tool_calls_list: list) -> list:
 
     Parses the source_metadata from get_observations results to extract
     import_name and provenance_url for proper source attribution.
+    Maps external URLs to NDAP-appropriate source URLs.
 
     Args:
         tool_calls_list: List of tool call dicts with 'name', 'arguments', 'result'
@@ -745,6 +1054,26 @@ def extract_provenance_from_mcp_results(tool_calls_list: list) -> list:
     Returns:
         list of dicts: [{"name": "Import Name", "url": "https://..."}]
     """
+    # Map external provenance URLs to NDAP-appropriate sources
+    PROVENANCE_URL_MAP = {
+        "datacommons.org": ("NDAP Data Commons", "https://ndap.niti.gov.in/"),
+        "ncvbdc.mohfw.gov.in": ("NCVBDC, MoHFW", "https://ndap.niti.gov.in/"),
+        "censusindia.gov.in": ("Census of India", "https://ndap.niti.gov.in/"),
+        "mospi.gov.in": ("MOSPI", "https://esankhyiki.mospi.gov.in/"),
+        "esankhyiki.mospi.gov.in": ("MOSPI", "https://esankhyiki.mospi.gov.in/"),
+        "tradestat.commerce.gov.in": ("DGCIS", "https://tradestat.commerce.gov.in/"),
+    }
+
+    def _map_url(url: str, name: str) -> tuple:
+        """Map external provenance URL to NDAP source. Returns (name, url)."""
+        for domain, (mapped_name, mapped_url) in PROVENANCE_URL_MAP.items():
+            if domain in url:
+                return (name or mapped_name, mapped_url)
+        # For any other external URL, redirect to NDAP
+        if url and "ndap.niti.gov.in" not in url:
+            return (name or "NDAP Data Source", "https://ndap.niti.gov.in/")
+        return (name or "Data Source", url)
+
     sources = []
     seen_urls = set()
 
@@ -772,11 +1101,13 @@ def extract_provenance_from_mcp_results(tool_calls_list: list) -> list:
                 url = metadata.get('provenance_url', '')
                 name = metadata.get('import_name', '')
 
-                if url and url not in seen_urls:
-                    seen_urls.add(url)
+                mapped_name, mapped_url = _map_url(url, name)
+
+                if mapped_url and mapped_url not in seen_urls:
+                    seen_urls.add(mapped_url)
                     sources.append({
-                        "name": name or "Data Source",
-                        "url": url
+                        "name": mapped_name,
+                        "url": mapped_url
                     })
 
         except (json.JSONDecodeError, KeyError, TypeError, IndexError):
@@ -785,12 +1116,73 @@ def extract_provenance_from_mcp_results(tool_calls_list: list) -> list:
     return sources
 
 
+# ─── Response Cache ───────────────────────────────────────────────────────────
+# In-memory cache keyed on normalized query text (first message only, no history).
+# Stores the full list of SSE event strings so repeat queries replay instantly.
+# TTL = 1 hour.  Max entries = 200 (LRU eviction).
+
+import hashlib
+from collections import OrderedDict
+
+class ResponseCache:
+    """Thread-safe LRU cache for SSE response sequences."""
+
+    def __init__(self, max_size: int = 200, ttl_seconds: int = 3600):
+        self._cache: OrderedDict = OrderedDict()
+        self._lock = threading.Lock()
+        self._max_size = max_size
+        self._ttl = ttl_seconds
+
+    @staticmethod
+    def _make_key(query: str) -> str:
+        normalized = query.strip().lower()
+        return hashlib.sha256(normalized.encode()).hexdigest()[:16]
+
+    def get(self, query: str) -> list | None:
+        key = self._make_key(query)
+        with self._lock:
+            entry = self._cache.get(key)
+            if entry is None:
+                return None
+            ts, events = entry
+            if time.time() - ts > self._ttl:
+                del self._cache[key]
+                return None
+            # Move to end (most recently used)
+            self._cache.move_to_end(key)
+            return events
+
+    def put(self, query: str, events: list):
+        key = self._make_key(query)
+        with self._lock:
+            self._cache[key] = (time.time(), events)
+            self._cache.move_to_end(key)
+            while len(self._cache) > self._max_size:
+                self._cache.popitem(last=False)
+
+    def size(self) -> int:
+        return len(self._cache)
+
+_response_cache = ResponseCache()
+
+
 # Flask Routes
 
 @app.route("/health", methods=["GET"])
 def health():
     """Health check."""
-    return jsonify({"status": "ok", "mcp_url": MCP_URL})
+    return jsonify({"status": "ok", "mcp_url": MCP_URL, "cache_size": _response_cache.size()})
+
+
+@app.route("/api/cache/clear", methods=["POST"])
+def clear_cache():
+    """Clear the response cache."""
+    secret_key = request.args.get("key", "")
+    if secret_key != get_query_param_key():
+        return jsonify({"error": "Invalid key"}), 403
+    old_size = _response_cache.size()
+    _response_cache._cache.clear()
+    return jsonify({"cleared": old_size, "cache_size": 0})
 
 
 @app.route("/api/tools", methods=["GET"])
@@ -872,18 +1264,13 @@ def get_config_endpoint():
     if not config:
         return jsonify({"success": False, "error": "Config not loaded"}), 500
 
-    # Return config without sensitive data
+    # Return config without sensitive data or model names
     safe_config = {
         "proxy_url": config.get("proxy_url", f"http://localhost:{PROXY_PORT}"),
-        "gemini": {
-            "api_base": config.get("gemini", {}).get("api_base", ""),
-            "mcp_model": config.get("gemini", {}).get("mcp_model", "gemini-3-flash-preview"),
-            "kb_model": config.get("gemini", {}).get("kb_model", "gemini-3-flash-preview"),
-        },
         "mcp": config.get("mcp", {}),
         "knowledge_base": config.get("knowledge_base", {}),
         "thinking": config.get("thinking", {}),
-        "has_api_key": bool(config.get("gemini", {}).get("api_key")),
+        "has_api_key": bool(config.get("gemini", {}).get("api_keys") or config.get("gemini", {}).get("api_key")),
     }
     return jsonify({"success": True, "config": safe_config})
 
@@ -919,7 +1306,7 @@ def gemini_request(
     system_instruction: str,
     model: str,
     tools: list = None,
-    temperature: float = 0.3,
+    temperature: float = 0,
     thinking_level: str = None,
     response_schema: dict = None,
     stream: bool = False,
@@ -1150,7 +1537,7 @@ def gemini_request_with_thought_streaming(
     system_instruction: str,
     model: str,
     tools: list = None,
-    temperature: float = 0.3,
+    temperature: float = 0,
     thinking_level: str = None,
     response_schema: dict = None,
     session_logger: Optional[SessionLogger] = None,
@@ -1366,8 +1753,21 @@ def execute_mcp_tool_loop(
     """
     config = effective_config if effective_config else load_config()
     mcp_prompt = config.get("prompts", {}).get("mcp", "")
-    mcp_model = config.get("gemini", {}).get("mcp_model", "gemini-3-flash-preview")
     thinking_level = config.get("thinking", {}).get("mcp_level", "low")
+
+    # Determine MCP provider: "gemma4" uses OpenRouter, anything else uses Gemini
+    mcp_provider = config.get("mcp", {}).get("provider", "gemma4")
+    if mcp_provider == "gemma4":
+        g4_config = config.get("gemma4", {})
+        mcp_model = g4_config.get("mcp_model", "") or g4_config.get("synthesis_model", "google/gemma-4-26b-a4b-it")
+        use_openrouter_mcp = True
+        if session_logger:
+            session_logger.log("MCP_PROVIDER", {"provider": "gemma4_openrouter", "model": mcp_model})
+    else:
+        mcp_model = config.get("gemini", {}).get("mcp_model", "gemini-3-flash-preview")
+        use_openrouter_mcp = False
+        if session_logger:
+            session_logger.log("MCP_PROVIDER", {"provider": "gemini", "model": mcp_model})
 
     # Get MCP tools
     tools = get_tools()
@@ -1385,13 +1785,39 @@ def execute_mcp_tool_loop(
         )
     } for t in tools]
 
-    # Build conversation - NO history for MCP calls (fresh search every time)
-    # History is only used in synthesis phase for context
+    # Build conversation context from history for cross-turn awareness
+    # Extract a compact summary of previous data availability from history
+    history_context = ""
+    if history:
+        prev_data_mentions = []
+        for msg in history[-6:]:  # Last 3 turns (user+model pairs)
+            parts = msg.get("parts", [])
+            for p in parts:
+                text = p.get("text", "")
+                if text and msg.get("role") == "model" and len(text) > 50:
+                    # Extract key data mentions from previous model responses
+                    for keyword in ["NDAP_", "Count_Person", "not available", "no data"]:
+                        if keyword.lower() in text.lower():
+                            # Grab a short snippet around the keyword
+                            idx = text.lower().find(keyword.lower())
+                            snippet = text[max(0, idx-30):idx+80].strip()
+                            if snippet and snippet not in prev_data_mentions:
+                                prev_data_mentions.append(snippet)
+
+        if prev_data_mentions:
+            history_context = (
+                "\n\n[CONVERSATION CONTEXT — Previous turns found these data points. "
+                "Avoid re-querying variables that already returned data or were confirmed empty:]\n"
+                + "\n".join(f"- {s}" for s in prev_data_mentions[:10])
+            )
+
     contents = []
-    contents.append({"role": "user", "parts": [{"text": user_message}]})
+    contents.append({"role": "user", "parts": [{"text": user_message + history_context}]})
 
     tool_calls_list = []
     all_tool_results = []
+    search_empty_count = 0  # S5: track consecutive empty search_indicators results
+    MAX_EMPTY_SEARCHES = 2  # Cap search_indicators retries
 
     for iteration in range(max_iterations):
         logger.info(f"MCP Tool Loop - Iteration {iteration + 1}/{max_iterations}")
@@ -1399,29 +1825,42 @@ def execute_mcp_tool_loop(
         if session_logger:
             session_logger.log("MCP_LOOP_ITERATION", {"iteration": iteration + 1, "max": max_iterations})
 
-        response = gemini_request_with_thought_streaming(
-            messages=contents,
-            system_instruction=mcp_prompt,
-            model=mcp_model,
-            tools=gemini_tools,
-            temperature=1.0,
-            thinking_level=thinking_level,
-            session_logger=session_logger,
-            thought_callback=thought_callback,
-            demo_mode=demo_mode
-        )
+        if use_openrouter_mcp:
+            response = openrouter_mcp_request(
+                messages=contents,
+                system_instruction=mcp_prompt,
+                model=mcp_model,
+                tools=gemini_tools,
+                temperature=0,
+                thinking_level=thinking_level,
+                session_logger=session_logger,
+                thought_callback=thought_callback,
+                demo_mode=demo_mode
+            )
+        else:
+            response = gemini_request_with_thought_streaming(
+                messages=contents,
+                system_instruction=mcp_prompt,
+                model=mcp_model,
+                tools=gemini_tools,
+                temperature=0,
+                thinking_level=thinking_level,
+                session_logger=session_logger,
+                thought_callback=thought_callback,
+                demo_mode=demo_mode
+            )
 
         if "error" in response:
             if session_logger:
                 session_logger.log_error("MCP_LOOP_ERROR", response['error'])
-            return "", tool_calls_list, f"Error: {response['error']}"
+            return "", tool_calls_list, f"Error: {response['error']}", iteration + 1
 
         # Check for function calls
         candidates = response.get("candidates", [])
         if not candidates:
             if session_logger:
                 session_logger.log_error("MCP_NO_CANDIDATES", "No response from model")
-            return "", tool_calls_list, "No response from model"
+            return "", tool_calls_list, "No response from model", iteration + 1
 
         candidate = candidates[0]
         content = candidate.get("content", {})
@@ -1445,7 +1884,7 @@ def execute_mcp_tool_loop(
                     "tools_called": len(tool_calls_list),
                     "has_text_response": bool(text_response)
                 })
-            return tool_results_text, tool_calls_list, text_response
+            return tool_results_text, tool_calls_list, text_response, iteration + 1
 
         # Execute function calls — run independent calls in parallel
         contents.append({"role": "model", "parts": parts})
@@ -1491,6 +1930,12 @@ def execute_mcp_tool_loop(
             tool_calls_list.append(tool_call_info)
             all_tool_results.append(f"Tool: {tool_name}\nResult: {result_text}")
 
+            # S5: Track empty search_indicators results
+            if tool_name == "search_indicators" and '"variables": []' in result_text:
+                search_empty_count += 1
+                if session_logger:
+                    session_logger.log("SEARCH_EMPTY", {"count": search_empty_count, "query": str(tool_args.get("query", ""))[:100]})
+
             function_responses.append({
                 "functionResponse": {
                     "name": tool_name,
@@ -1498,13 +1943,25 @@ def execute_mcp_tool_loop(
                 }
             })
 
+        # S5: If search_indicators returned empty too many times, inject guidance
+        if search_empty_count >= MAX_EMPTY_SEARCHES:
+            _guidance = (
+                "[SYSTEM NOTE: search_indicators returned empty results multiple times. "
+                "Stop calling search_indicators. Either use get_observations with known DCIDs "
+                "from the variable reference in your instructions, or conclude that the data "
+                "is not available in this instance.]"
+            )
+            function_responses.append({"text": _guidance})
+            if session_logger:
+                session_logger.log("SEARCH_CAP_REACHED", {"empty_searches": search_empty_count})
+
         contents.append({"role": "user", "parts": function_responses})
 
     # Max iterations reached
     tool_results_text = "\n\n".join(all_tool_results)
     if session_logger:
         session_logger.log("MCP_LOOP_MAX_ITERATIONS", {"tools_called": len(tool_calls_list)})
-    return tool_results_text, tool_calls_list, "Max tool iterations reached"
+    return tool_results_text, tool_calls_list, "Max tool iterations reached", max_iterations
 
 
 def get_api_key_filestore_mapping(demo_mode: bool = False) -> dict:
@@ -1607,7 +2064,7 @@ def execute_kb_query(user_message: str, session_logger: Optional[SessionLogger] 
             "contents": [{"role": "user", "parts": [{"text": user_message}]}],
             "systemInstruction": {"parts": [{"text": inject_datetime(kb_prompt)}]},
             "generationConfig": {
-                "temperature": 0.3,
+                "temperature": 0,
             },
             "tools": [{
                 "fileSearch": {
@@ -1752,7 +2209,19 @@ CHART_CONFIG_SCHEMA = {
                     "child_place_type": {"type": "string"},
                     "date": {
                         "type": "string",
-                        "description": "Single comparison date in YYYY, YYYY-MM, or YYYY-MM-DD"
+                        "description": "ISO-8601 date (YYYY, YYYY-MM, or YYYY-MM-DD). Only for: highlight, map. Use when query mentions a specific year."
+                    },
+                    "startDate": {
+                        "type": "string",
+                        "description": "Earliest date (ISO-8601). Only for line charts. Use when query specifies a year or date range start."
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "description": "Latest date (ISO-8601). Only for line charts. Use when query specifies a year or date range end."
+                    },
+                    "dates": {
+                        "type": "string",
+                        "description": "Space-separated years for slider charts (e.g. '2001 2002 2003')"
                     }
                 }
             }
@@ -1764,11 +2233,220 @@ CHART_CONFIG_SCHEMA = {
 
 
 
+def openrouter_mcp_request(
+    messages: list,
+    system_instruction: str,
+    model: str,
+    tools: list = None,
+    temperature: float = 0,
+    thinking_level: str = None,
+    response_schema: dict = None,
+    session_logger: Optional[SessionLogger] = None,
+    thought_callback: callable = None,
+    demo_mode: bool = False
+) -> dict:
+    """Make an OpenRouter function-calling request, returning Gemini-format response.
+
+    Drop-in replacement for gemini_request_with_thought_streaming so the MCP loop
+    can run on Gemma 4 (or any OpenRouter model that supports tool use) without
+    changing the loop logic.
+
+    Converts:  Gemini tool schema  -> OpenAI tools format
+               Gemini messages     -> OpenAI messages (incl. tool_calls / tool results)
+               OpenAI response     -> Gemini response dict
+    """
+    config = load_config()
+    g4_config = config.get("gemma4", {})
+    or_config = config.get("openrouter", {})
+    api_key = g4_config.get("api_key", "") or os.environ.get("OPENROUTER_API_KEY") or or_config.get("api_key", "")
+    api_base = g4_config.get("api_base", "") or or_config.get("api_base", "https://openrouter.ai/api/v1")
+
+    if not api_key or api_key == "PASTE_YOUR_OPENROUTER_API_KEY_HERE":
+        return {"error": "OpenRouter API key not configured for MCP."}
+
+    # --- Convert Gemini tools to OpenAI format ---
+    oai_tools = None
+    if tools:
+        oai_tools = []
+        for t in tools:
+            oai_tools.append({
+                "type": "function",
+                "function": {
+                    "name": t.get("name", ""),
+                    "description": t.get("description", ""),
+                    "parameters": t.get("parameters", {"type": "object", "properties": {}})
+                }
+            })
+
+    # --- Convert Gemini messages to OpenAI format ---
+    oai_messages = []
+    if system_instruction:
+        oai_messages.append({"role": "system", "content": inject_datetime(system_instruction)})
+
+    for msg in messages:
+        role = msg.get("role", "user")
+        parts = msg.get("parts", [])
+
+        if role == "model":
+            # Check if this model message contains tool calls
+            tool_calls_oai = []
+            text_content = ""
+            for p in parts:
+                if "functionCall" in p:
+                    fc = p["functionCall"]
+                    tool_calls_oai.append({
+                        "id": f"call_{fc.get('name', 'unknown')}_{len(tool_calls_oai)}",
+                        "type": "function",
+                        "function": {
+                            "name": fc.get("name", ""),
+                            "arguments": json.dumps(fc.get("args", {}))
+                        }
+                    })
+                elif "text" in p:
+                    text_content += p["text"]
+            assistant_msg = {"role": "assistant"}
+            if tool_calls_oai:
+                assistant_msg["tool_calls"] = tool_calls_oai
+                assistant_msg["content"] = text_content or None
+            else:
+                assistant_msg["content"] = text_content
+            oai_messages.append(assistant_msg)
+
+        elif role == "user":
+            # User parts may contain functionResponse items (tool results)
+            func_responses = [p for p in parts if "functionResponse" in p]
+            text_parts = [p.get("text", "") for p in parts if "text" in p and "functionResponse" not in p]
+
+            if func_responses:
+                for fr in func_responses:
+                    fr_data = fr["functionResponse"]
+                    oai_messages.append({
+                        "role": "tool",
+                        "tool_call_id": f"call_{fr_data.get('name', 'unknown')}_0",
+                        "content": json.dumps(fr_data.get("response", {})) if isinstance(fr_data.get("response"), dict) else str(fr_data.get("response", ""))
+                    })
+                # Also add any text guidance (e.g. S5 search cap message) as a user message
+                if text_parts:
+                    combined = " ".join(t for t in text_parts if t.strip())
+                    if combined.strip():
+                        oai_messages.append({"role": "user", "content": combined})
+            else:
+                content = " ".join(p.get("text", "") for p in parts if isinstance(p, dict) and "text" in p)
+                oai_messages.append({"role": "user", "content": content})
+        else:
+            content = " ".join(p.get("text", "") for p in parts if isinstance(p, dict) and "text" in p)
+            oai_messages.append({"role": role, "content": content})
+
+    # --- Fix tool_call_id references ---
+    # OpenAI requires tool results to reference the exact tool_call_id from the assistant message.
+    # Re-scan and fix IDs so they match.
+    _last_tool_calls = {}
+    for i, m in enumerate(oai_messages):
+        if m.get("role") == "assistant" and m.get("tool_calls"):
+            _last_tool_calls = {tc["function"]["name"]: tc["id"] for tc in m["tool_calls"]}
+        elif m.get("role") == "tool" and _last_tool_calls:
+            # Extract the tool name from the placeholder ID
+            placeholder_id = m.get("tool_call_id", "")
+            for tname, tid in _last_tool_calls.items():
+                if tname in placeholder_id:
+                    m["tool_call_id"] = tid
+                    break
+
+    payload = {
+        "model": model,
+        "messages": oai_messages,
+        "temperature": temperature,
+    }
+    if oai_tools:
+        payload["tools"] = oai_tools
+        payload["tool_choice"] = "auto"
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://ndap.niti.gov.in",
+        "X-Title": "NDAP Data Agent",
+    }
+
+    if session_logger:
+        session_logger.log("OPENROUTER_MCP_REQUEST", {
+            "model": model,
+            "messages_count": len(oai_messages),
+            "has_tools": bool(oai_tools),
+            "tool_count": len(oai_tools) if oai_tools else 0
+        })
+
+    try:
+        start_time = time.time()
+        response = requests.post(
+            f"{api_base}/chat/completions",
+            headers=headers,
+            json=payload,
+            timeout=120
+        )
+
+        duration_ms = (time.time() - start_time) * 1000
+        if session_logger:
+            session_logger.log("OPENROUTER_MCP_RESPONSE", {
+                "status_code": response.status_code,
+                "duration_ms": round(duration_ms, 2)
+            })
+
+        if response.status_code != 200:
+            error_text = response.text[:500]
+            logger.error(f"OpenRouter MCP error {response.status_code}: {error_text}")
+            return {"error": f"OpenRouter returned {response.status_code}: {error_text}"}
+
+        data = response.json()
+        choice = data.get("choices", [{}])[0]
+        message = choice.get("message", {})
+
+        # --- Convert OpenAI response back to Gemini format ---
+        gemini_parts = []
+        oai_tool_calls = message.get("tool_calls", [])
+        if oai_tool_calls:
+            for tc in oai_tool_calls:
+                func = tc.get("function", {})
+                try:
+                    args = json.loads(func.get("arguments", "{}"))
+                except json.JSONDecodeError:
+                    args = {}
+                gemini_parts.append({
+                    "functionCall": {
+                        "name": func.get("name", ""),
+                        "args": args
+                    }
+                })
+        text_content = message.get("content", "")
+        if text_content:
+            gemini_parts.append({"text": text_content})
+
+        if not gemini_parts:
+            gemini_parts.append({"text": message.get("content", "") or ""})
+
+        return {
+            "candidates": [{
+                "content": {
+                    "parts": gemini_parts,
+                    "role": "model"
+                },
+                "finishReason": choice.get("finish_reason", "STOP")
+            }]
+        }
+
+    except requests.exceptions.Timeout:
+        logger.error("OpenRouter MCP request timed out")
+        return {"error": "OpenRouter request timed out (120s)"}
+    except Exception as e:
+        logger.error(f"OpenRouter MCP error: {e}")
+        return {"error": str(e)}
+
+
 def openrouter_stream_request(
     messages: list,
     system_instruction: str,
     model: str,
-    temperature: float = 0.3,
+    temperature: float = 0,
     session_logger=None
 ):
     """Stream a response from OpenRouter (OpenAI-compatible API).
@@ -1852,7 +2530,7 @@ def sarvam_stream_request(
     messages: list,
     system_instruction: str,
     model: str,
-    temperature: float = 0.3,
+    temperature: float = 0,
     session_logger=None
 ):
     """Stream a response from Sarvam AI (OpenAI-compatible API).
@@ -1929,7 +2607,7 @@ def sarvam_stream_request(
         yield {"type": "text", "content": f"\n\n[Sarvam error: {e}]"}
 
 
-def get_chart_config(mcp_results: str, user_message: str) -> dict:
+def get_chart_config(mcp_results: str, user_message: str, actual_dcids: list = None) -> dict:
     """Get chart configuration using structured output.
 
     Supports multiple charts for variables with different units/scales.
@@ -1937,15 +2615,21 @@ def get_chart_config(mcp_results: str, user_message: str) -> dict:
     config = load_config()
     mcp_model = config.get("gemini", {}).get("mcp_model", "gemini-3-flash-preview")
 
+    dcid_hint = ""
+    if actual_dcids:
+        dcid_hint = f"\n\n**ACTUAL DCIDs used in MCP tool calls (USE THESE EXACTLY):**\n{json.dumps(actual_dcids)}\nYou MUST use these exact DCIDs in variable_dcids. Do NOT substitute or invent different DCIDs.\n"
+
     prompt = f"""Based on the data query and results, determine chart configurations.
 
 User Query: {user_message}
-
+{dcid_hint}
 Data Results:
 {mcp_results if mcp_results else 'No data results'}
 
 Instructions:
-**CRITICAL — Year/Date Matching**: If the user's query mentions a specific year (e.g., "2023", "2021"), the chart MUST use that year in the date field. Do NOT default to the latest/most recent year. Match the year from the user query exactly.
+**CRITICAL — Year/Date Matching**: If the user's query mentions a specific year (e.g., "2023", "2021"), pass it via the appropriate date attribute for the chart type. Do NOT default to the latest/most recent year. Match the year from the user query exactly.
+
+**CRITICAL — DCID Matching**: Use ONLY the variable DCIDs that appear in the Data Results or the ACTUAL DCIDs list above. Do NOT invent, modify, or substitute DCIDs. The chart MUST use the same DCIDs that the search/query used.
 
 1. Extract variable DCIDs and place DCIDs from the results
 2. Analyze variable units from source_metadata and data scales from the values
@@ -1963,10 +2647,12 @@ Instructions:
    - "ranking": when ranking top/bottom states or entities
    PREFER "map" over "bar" whenever the data has 5+ Indian states with a single variable.
 7. Give each chart a descriptive title related to data it is showing but do NOT include year/date in the title.
-8. For ALL bar charts, ALWAYS include a date field:
-   - date can be in formats YYYY, YYYY-MM, or YYYY-MM-DD (e.g., "2021", "2022", "2021-01", "2022-01-01")
-   - prefer explicit date from user query or tool result context
-   - if no reliable explicit date is available, omit date
+8. Date attributes per chart type (only these are supported by the web components):
+   - "highlight": set `date` (ISO-8601: YYYY, YYYY-MM, or YYYY-MM-DD) when a specific year is mentioned
+   - "map": set `date` (ISO-8601) when a specific year is mentioned
+   - "line": set `startDate` and/or `endDate` (ISO-8601) to filter the time range. If user asks about a single year, set both startDate and endDate to that year. If a range (e.g. "2010 to 2020"), set startDate="2010" endDate="2020". Omit if no date constraint.
+   - "slider": set `dates` as space-separated years (e.g. "2001 2002 2003") to define the slider range
+   - "bar", "ranking", "pie", "gauge", "scatter": NO date attribute supported — do NOT set date for these
 
 Set should_render to false if no meaningful data for visualization."""
 
@@ -1974,7 +2660,7 @@ Set should_render to false if no meaningful data for visualization."""
         messages=[{"role": "user", "parts": [{"text": prompt}]}],
         system_instruction="You are a data visualization expert. Extract chart configurations from data results, grouping compatible variables together and separating incompatible ones into multiple charts.",
         model=mcp_model,
-        temperature=0.2,
+        temperature=0,
         thinking_level="minimal",  # Fastest for simple extraction
         response_schema=CHART_CONFIG_SCHEMA,
         stream=False
@@ -2078,21 +2764,85 @@ def chat_stream():
     history = data.get("history", [])
     existing_session_id = data.get("session_id")  # From follow-up messages
 
-    # Query chaining: For follow-up messages, prepend prior user queries to preserve
-    # specifics (years, entities) that get lost in vague follow-ups like "calculate using above data".
-    # Pattern: "Q1. Q2. Current query: Q3"
+    # ── Response Cache: check for any exact query match ──
+    # Cache is keyed on normalized query text. We check regardless of session/history
+    # because the same data query should return the same result.
+    # Only *store* new entries for first-turn queries (no history, no session).
+    is_cacheable = not history and not existing_session_id
+    cached_events = _response_cache.get(user_message)
+    if cached_events is not None:
+            logger.info(f"CACHE HIT for query: {user_message[:80]}")
+
+            def replay_cached():
+                cache_start = time.time()
+                cache_session = SessionLogger()
+                yield f"data: {json.dumps({'session_id': cache_session.session_id})}\n\n"
+                cache_session.log("CACHE_HIT", {"query": user_message[:200], "cached_events": len(cached_events)})
+
+                for event in cached_events:
+                    # Rewrite the done event with updated timing
+                    if '"done": true' in event or '"done":true' in event:
+                        try:
+                            evt_data = json.loads(event.replace("data: ", "").strip())
+                            evt_data['duration_ms'] = round((time.time() - cache_start) * 1000, 0)
+                            evt_data['cached'] = True
+                            yield f"data: {json.dumps(evt_data)}\n\n"
+                        except Exception:
+                            yield event if event.endswith("\n\n") else event + "\n\n"
+                    else:
+                        yield event if event.endswith("\n\n") else event + "\n\n"
+
+                cache_session.log("CACHE_REPLAY_COMPLETE", {"duration_ms": round((time.time() - cache_start) * 1000, 1)})
+                cache_session.flush()
+
+            return Response(
+                stream_with_context(replay_cached()),
+                mimetype='text/event-stream',
+                headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no', 'Connection': 'keep-alive'}
+            )
+
+    # Query chaining: For follow-up messages, build a compact context block with:
+    # 1. Previous user queries (preserve years, entities from vague follow-ups)
+    # 2. Data availability from prior model responses (avoid re-querying dead ends)
     if history:
-        prior_user_queries = [
-            msg["parts"][0]["text"] for msg in history
-            if msg.get("role") == "user" and msg.get("parts")
-        ]
+        prior_user_queries = []
+        prior_data_context = []
+        for msg in history:
+            parts = msg.get("parts", [])
+            if not parts:
+                continue
+            text = parts[0].get("text", "") if isinstance(parts[0], dict) else ""
+
+            if msg.get("role") == "user" and text:
+                prior_user_queries.append(text[:200])
+            elif msg.get("role") == "model" and text:
+                # Extract DCID mentions and data availability signals from model responses
+                import re as _re
+                dcid_matches = _re.findall(r'NDAP_\w+', text)
+                if dcid_matches:
+                    prior_data_context.append(f"Variables used: {', '.join(set(dcid_matches[:5]))}")
+                if "not available" in text.lower() or "no data" in text.lower():
+                    prior_data_context.append("Some requested data was not available in previous turns")
+
+        context_block = ""
         if prior_user_queries:
-            chain = ". ".join(prior_user_queries)
-            user_message_for_mcp = f"[Previous queries for context: {chain}]\n\nCurrent query: {user_message}"
+            chain = ". ".join(prior_user_queries[-3:])  # Last 3 queries max
+            context_block += f"[Previous queries: {chain}]\n"
+        if prior_data_context:
+            context_block += f"[Prior data context: {'; '.join(set(prior_data_context[:5]))}]\n"
+
+        if context_block:
+            user_message_for_mcp = f"{context_block}\nCurrent query: {user_message}"
         else:
             user_message_for_mcp = user_message
     else:
         user_message_for_mcp = user_message
+
+    # S1: Intent-to-DCID pre-resolution — skip wasted search_indicators calls
+    intent_result = resolve_intent_dcids(user_message)
+
+    if intent_result["matched"] and intent_result["hint_text"]:
+        user_message_for_mcp = f"{intent_result['hint_text']}\n\n{user_message_for_mcp}"
 
     # Parse query parameters for config overrides
     query_params = {}
@@ -2128,6 +2878,7 @@ def chat_stream():
         nonlocal session_logger
         request_start_time = time.time()
         full_text = ""
+        _cache_events = []  # Collect events for caching
 
         # Chart config runs in parallel with KB + synthesis
         chart_result_holder = {'config': {"should_render": False}}
@@ -2146,6 +2897,13 @@ def chat_stream():
 
         # Log user message
         session_logger.log_user_message(user_message, len(history))
+
+        # Log intent resolution
+        if intent_result["matched"]:
+            session_logger.log("INTENT_RESOLVED", {
+                "dcids": list(intent_result["dcids"].keys()),
+                "kb_only": intent_result["kb_only"],
+            })
 
         config = load_config()
         if not config:
@@ -2186,21 +2944,78 @@ def chat_stream():
             """Callback to put thoughts into queue for streaming."""
             thought_queue.put({'thought': thought_text, 'phase': phase})
 
-        # Phase 1: MCP Tools
+        # S2: Session context — track working/empty variables across turns
+        session_context = {
+            'working_variables': [],   # DCIDs that returned data
+            'empty_variables': [],     # DCIDs that returned no data
+            'fallbacks_used': [],      # KB fallback topics
+        }
+
+        # Phase 1 + 2: MCP Tools + KB Query (run in PARALLEL)
         mcp_enabled = effective_config.get("mcp", {}).get("enabled", True)
         mcp_results = ""
         tool_calls_list = []
         data_status = None
+        kb_response = ""
+        kb_sources = []
+        kb_enabled = effective_config.get("knowledge_base", {}).get("enabled", False)
+
+        # Skip KB for pure data queries (saves 6-10s) — only use KB for policy/report questions
+        if kb_enabled:
+            _msg_lower = user_message.lower()
+            _data_keywords = ['gdp', 'gsdp', 'gva', 'cpi', 'inflation', 'export', 'import', 'factory', 'factories',
+                              'milk production', 'dairy production', 'unemployment', 'population density', 'birth rate',
+                              'death rate', 'infant mortality', 'slum population', 'slum literacy', 'nhm allocation',
+                              'worker population', 'tb notification', 'tb cases', 'dengue cases', 'census population',
+                              'lfpr', 'worker ratio', 'labour participation', 'vital stats', 'mortality rate',
+                              'population growth', 'population projection', 'aqi', 'pm2.5', 'pollution level',
+                              'show', 'compare', 'trend', 'chart', 'graph', 'plot', 'map']
+            _kb_keywords = ['policy', 'report', 'survey', 'nfhs', 'scheme', 'programme', 'program', 'recommend',
+                            'why', 'explain', 'reason', 'cause', 'what should', 'suggest', 'guidelines', 'norms',
+                            'act', 'regulation', 'rule', 'hindi', 'document', 'pdf', 'paper', 'study',
+                            'economic survey', 'nss', 'health spending', 'health financing']
+            _needs_kb = any(k in _msg_lower for k in _kb_keywords)
+            _pure_data = any(k in _msg_lower for k in _data_keywords) and not _needs_kb
+            if _pure_data:
+                kb_enabled = False
+                session_logger.log("KB_SKIPPED", {"reason": "pure data query", "query": user_message[:100]})
+
+        # Start KB immediately in background (runs parallel with MCP)
+        kb_result_holder = {'response': '', 'sources': []}
+        kb_thread = None
+        if kb_enabled:
+            # S3: Build English retrieval query for better KB search
+            kb_query = build_kb_retrieval_query(user_message, history)
+            if kb_query != user_message:
+                session_logger.log("KB_QUERY_ENRICHED", {"original": user_message[:100], "enriched": kb_query[:100]})
+
+            def run_kb():
+                try:
+                    kb_result = execute_kb_query(
+                        kb_query, session_logger=session_logger,
+                        thought_callback=lambda t: thought_callback(t, 'kb'),
+                        demo_mode=demo_mode,
+                        effective_config=effective_config
+                    )
+                    kb_result_holder['response'] = kb_result.get("response", "")
+                    kb_result_holder['sources'] = kb_result.get("sources", [])
+                except Exception as e:
+                    logger.error(f"KB thread error: {e}")
+
+            kb_thread = threading.Thread(target=run_kb)
+            kb_thread.start()
 
         if mcp_enabled and mcp_ready:
             yield f"data: {json.dumps({'status': 'mcp_start', 'message': 'Querying data tools...'})}\n\n"
+            if kb_enabled:
+                yield f"data: {json.dumps({'status': 'kb_start', 'message': 'Searching knowledge base...'})}\n\n"
 
             # Run MCP in thread to enable thought streaming
-            mcp_result_holder = {'results': '', 'tool_calls': [], 'text': ''}
+            mcp_result_holder = {'results': '', 'tool_calls': [], 'text': '', 'iterations': 0}
 
             def run_mcp():
                 try:
-                    mcp_result_holder['results'], mcp_result_holder['tool_calls'], mcp_result_holder['text'] = execute_mcp_tool_loop(
+                    mcp_result_holder['results'], mcp_result_holder['tool_calls'], mcp_result_holder['text'], mcp_result_holder['iterations'] = execute_mcp_tool_loop(
                         user_message_for_mcp, history, session_logger=session_logger,
                         effective_config=effective_config,
                         thought_callback=lambda t: thought_callback(t, 'mcp'),
@@ -2240,17 +3055,35 @@ def chat_stream():
             data_status = check_data_availability(tool_calls_list)
             yield f"data: {json.dumps({'data_status': data_status})}\n\n"
 
+            # S2: Populate session context from tool results
+            for tc in tool_calls_list:
+                if tc['name'] == 'get_observations':
+                    vd = tc['arguments'].get('variable_dcid', '')
+                    if vd:
+                        has_ts = bool(_RE_TIME_SERIES_HAS_DATA.search(tc.get('result', '')))
+                        if has_ts:
+                            session_context['working_variables'].append(vd)
+                        else:
+                            session_context['empty_variables'].append(vd)
+
             # Extract and send provenance sources from MCP results
             mcp_sources = extract_provenance_from_mcp_results(tool_calls_list)
             if mcp_sources:
                 yield f"data: {json.dumps({'mcp_sources': mcp_sources})}\n\n"
 
-            # Start chart config in background (runs parallel with KB + synthesis)
+            # Start chart config in background (runs parallel with synthesis)
             # Only generate charts if MCP actually found data (skip for KB-only answers)
             mcp_has_data = data_status.get('has_data', True) if data_status else True
             if mcp_results and mcp_has_data:
+                # Extract actual DCIDs used in get_observations calls
+                _actual_dcids = []
+                for tc in tool_calls_list:
+                    if tc['name'] == 'get_observations':
+                        vd = tc['arguments'].get('variable_dcid', '')
+                        if vd and vd not in _actual_dcids:
+                            _actual_dcids.append(vd)
                 def run_chart_config():
-                    chart_result_holder['config'] = get_chart_config(mcp_results, user_message_for_mcp)
+                    chart_result_holder['config'] = get_chart_config(mcp_results, user_message_for_mcp, _actual_dcids)
                 chart_thread[0] = threading.Thread(target=run_chart_config)
                 chart_thread[0].start()
 
@@ -2258,41 +3091,8 @@ def chat_stream():
             session_logger.log("MCP_SKIPPED", {"reason": "MCP not connected or no tools available"})
             yield f"data: {json.dumps({'status': 'mcp_skipped', 'message': 'MCP server not connected'})}\n\n"
 
-        # Phase 2: KB Query (if enabled)
-        kb_response = ""
-        kb_sources = []
-        kb_enabled = effective_config.get("knowledge_base", {}).get("enabled", False)
-
-        if kb_enabled:
-            yield f"data: {json.dumps({'status': 'kb_start', 'message': 'Searching knowledge base...'})}\n\n"
-
-            # Run KB in thread to enable thought streaming
-            kb_result_holder = {'response': '', 'sources': []}
-
-            def run_kb():
-                try:
-                    kb_result = execute_kb_query(
-                        user_message, session_logger=session_logger,
-                        thought_callback=lambda t: thought_callback(t, 'kb'),
-                        demo_mode=demo_mode,
-                        effective_config=effective_config
-                    )
-                    kb_result_holder['response'] = kb_result.get("response", "")
-                    kb_result_holder['sources'] = kb_result.get("sources", [])
-                except Exception as e:
-                    logger.error(f"KB thread error: {e}")
-
-            kb_thread = threading.Thread(target=run_kb)
-            kb_thread.start()
-
-            # Stream thoughts while KB runs
-            while kb_thread.is_alive() or not thought_queue.empty():
-                try:
-                    thought_data = thought_queue.get(timeout=0.1)
-                    yield f"data: {json.dumps(thought_data)}\n\n"
-                except queue.Empty:
-                    continue
-
+        # Wait for KB to finish (it's been running in parallel with MCP)
+        if kb_thread is not None:
             kb_thread.join()
 
             # Signal KB thinking complete
@@ -2301,6 +3101,13 @@ def chat_stream():
             # Get results from thread
             kb_response = kb_result_holder['response']
             kb_sources = kb_result_holder['sources']
+
+            # S4: Topic-coherence filter — drop off-topic KB responses
+            kb_response, kb_sources = filter_kb_response_relevance(
+                kb_response, kb_sources, user_message, history
+            )
+            if not kb_response and kb_result_holder['response']:
+                session_logger.log("KB_FILTERED_OFFTOPIC", {"original_len": len(kb_result_holder['response'])})
 
             # Send KB sources to frontend for inline citations
             if kb_sources:
@@ -2311,17 +3118,37 @@ def chat_stream():
         yield f"data: {json.dumps({'status': 'synthesis_start', 'message': 'Generating response...'})}\n\n"
 
         synthesis_prompt = effective_config.get("prompts", {}).get("synthesis", "")
-        # Model priority: Sarvam > OpenRouter > Gemini (whichever has a valid key)
+        # Model priority: Gemini Flash (fastest) unless user explicitly selected another
+        # URL param ?model=openrouter or ?model=sarvam overrides this default
         _sv_key = os.environ.get("SARVAM_API_KEY") or effective_config.get("sarvam", {}).get("api_key", "")
         _sv_model = effective_config.get("sarvam", {}).get("synthesis_model", "")
         _or_key = os.environ.get("OPENROUTER_API_KEY") or effective_config.get("openrouter", {}).get("api_key", "")
         _or_key = _or_key if _or_key and _or_key != "PASTE_YOUR_OPENROUTER_API_KEY_HERE" else ""
         _or_model = effective_config.get("openrouter", {}).get("synthesis_model", "")
-        if _sv_key and _sv_model:
+        # Gemma 4 config (also via OpenRouter)
+        _g4_config = effective_config.get("gemma4", {})
+        _g4_key = _g4_config.get("api_key", "") or _or_key
+        _g4_model = _g4_config.get("synthesis_model", "")
+        # Check if user explicitly requested a model via URL param or body
+        requested_model = request.args.get('model', '').lower() if request else ''
+        if not requested_model:
+            # Also check request body for model field
+            try:
+                body = request.get_json(silent=True) or {}
+                requested_model = body.get('model', '').lower()
+            except Exception:
+                pass
+        if requested_model == 'sarvam' and _sv_key and _sv_model:
             synthesis_model = _sv_model
-        elif _or_key and _or_model:
+        elif requested_model == 'gemma4' and _g4_key and _g4_model:
+            synthesis_model = _g4_model
+        elif requested_model == 'openrouter' and _or_key and _or_model:
             synthesis_model = _or_model
+        elif _g4_key and _g4_model:
+            # Default to Gemma 4 when available
+            synthesis_model = _g4_model
         else:
+            # Fallback to Gemini Flash
             synthesis_model = effective_config.get("gemini", {}).get("mcp_model", "gemini-3-flash-preview")
         thinking_level = effective_config.get("thinking", {}).get("synthesis_level", "low")
 
@@ -2336,7 +3163,7 @@ def chat_stream():
             if mcp_sources:
                 source_links = ", ".join([f"[{s['name']}]({s['url']})" for s in mcp_sources])
             else:
-                source_links = "Data Commons"
+                source_links = "[NDAP Data Commons](https://ndap.niti.gov.in/)"
             context_parts.append(f"**DATA RESULTS [Sources: {source_links}]:**\n{mcp_results}")
         if kb_response:
             # Include document names from kb_sources for proper citation
@@ -2345,15 +3172,32 @@ def chat_stream():
                 context_parts.append(f"**POLICY INFORMATION [Sources: {kb_source_names}]:**\n(IMPORTANT: When citing this information, use the actual document names listed above as source citations — NEVER use the generic label 'Knowledge Base'.)\n{kb_response}")
             else:
                 context_parts.append(f"**POLICY INFORMATION:**\n{kb_response}")
+            session_context['fallbacks_used'].append('KB')
+
+        # S2: Inject session context so LLM knows data availability
+        if session_context['empty_variables']:
+            context_parts.append(f"**DATA AVAILABILITY NOTE:** The following indicators returned NO data: {', '.join(session_context['empty_variables'])}. Do not reference these — only use data that was actually returned above.")
 
         # Log synthesis start
         session_logger.log_synthesis_start(["MCP" if mcp_results else None, "KB" if kb_response else None])
 
-        synthesis_message = f"""User Query: {user_message}
+        # Detect query language for explicit enforcement
+        _has_devanagari = bool(re.search(r'[\u0900-\u097F]', user_message))
+        _has_latin_hindi = bool(re.search(r'\b(mein|kya|hai|ka|ke|ki|ko|se|aur|nahi|kaise|batao|kitna|kitne|kitni)\b', user_message.lower())) and not _has_devanagari
+        if _has_devanagari:
+            lang_instruction = "LANGUAGE INSTRUCTION: The user wrote in Devanagari Hindi. Respond ENTIRELY in Devanagari Hindi script."
+        elif _has_latin_hindi:
+            lang_instruction = "LANGUAGE INSTRUCTION: The user wrote in Roman/Hinglish script. Respond in Roman/Latin script Hindi. Do NOT use Devanagari characters."
+        else:
+            lang_instruction = "LANGUAGE INSTRUCTION: The user wrote in English. Respond ENTIRELY in English. Do NOT use Hindi, Devanagari, or any non-English text in your response."
+
+        synthesis_message = f"""{lang_instruction}
+
+User Query: {user_message}
 
 {chr(10).join(context_parts) if context_parts else 'No additional context available.'}
 
-Please provide a comprehensive response combining all available information."""
+Please provide a comprehensive response combining all available information. Remember: respond in the SAME language as the user query."""
 
         # Stream the synthesis response with thought streaming
         try:
@@ -2455,11 +3299,44 @@ Please provide a comprehensive response combining all available information."""
         # Gemini Flash pricing: $0.075/1M input tokens, $0.30/1M output tokens
         cost_usd_est = (input_tokens_est * 0.075 + output_tokens_est * 0.30) / 1_000_000
 
+        # Count unique indicators (stat vars) searched via get_observations
+        indicators_searched = set()
+        for tc in tool_calls_list:
+            if tc.get('name') == 'get_observations':
+                vd = tc.get('arguments', {}).get('variable_dcid', '')
+                if vd:
+                    indicators_searched.add(vd)
+
         # Send final event with timing + cost info (GP-10)
-        yield f"data: {json.dumps({'chart_config': chart_config, 'done': True, 'duration_ms': round(total_duration_ms, 0), 'total_tokens': total_tokens_est, 'input_tokens': input_tokens_est, 'output_tokens': output_tokens_est, 'cost_usd': round(cost_usd_est, 6)})}\n\n"
+        try:
+            mcp_iterations_used = mcp_result_holder.get('iterations', 0)
+        except NameError:
+            mcp_iterations_used = 0
+        yield f"data: {json.dumps({'chart_config': chart_config, 'done': True, 'duration_ms': round(total_duration_ms, 0), 'total_tokens': total_tokens_est, 'input_tokens': input_tokens_est, 'output_tokens': output_tokens_est, 'cost_usd': round(cost_usd_est, 6), 'indicators_searched': len(indicators_searched), 'tool_calls_count': len(tool_calls_list), 'mcp_iterations': mcp_iterations_used})}\n\n"
+
+    def generate_and_cache():
+        """Wrap generate() to collect cacheable events (tool calls, text, charts, done)."""
+        cacheable_events = []
+        for event in generate():
+            yield event
+            # Only cache substantive events (skip session_id, status updates, thinking)
+            if is_cacheable and event.startswith("data: "):
+                try:
+                    evt_str = event.strip()
+                    evt_data = json.loads(evt_str.replace("data: ", "", 1))
+                    # Cache: text chunks, tool_call details, chart_config/done, mcp_sources, data_status
+                    if any(k in evt_data for k in ('text', 'done', 'type', 'mcp_sources', 'data_status', 'chart_config')):
+                        cacheable_events.append(evt_str)
+                    # Store cache when we see the done event (don't wait for generator to finish,
+                    # as Flask may not fully consume the generator after client disconnects)
+                    if evt_data.get('done'):
+                        _response_cache.put(user_message, cacheable_events)
+                        logger.info(f"CACHE STORE: {len(cacheable_events)} events for query: {user_message[:80]}")
+                except Exception:
+                    pass
 
     return Response(
-        stream_with_context(generate()),
+        stream_with_context(generate_and_cache()),
         mimetype='text/event-stream',
         headers={
             'Cache-Control': 'no-cache',
@@ -2742,6 +3619,34 @@ def submit_feedback():
         f.write(json.dumps(feedback_entry) + "\n")
     logger.info(f"Feedback recorded: {vote} for session {session_id}")
     return jsonify({"success": True})
+
+
+@app.route("/api/bug-report", methods=["POST"])
+def submit_bug_report():
+    """Store user bug reports with full session context."""
+    data = request.get_json(silent=True) or {}
+    description = data.get("description", "").strip()
+    if not description or len(description) < 5:
+        return jsonify({"error": "Description too short"}), 400
+    bug_entry = {
+        "id": str(uuid.uuid4())[:8],
+        "category": data.get("category", "other"),
+        "description": description,
+        "expected": data.get("expected", ""),
+        "session_id": data.get("session"),
+        "recent_queries": data.get("recent_queries", []),
+        "url": data.get("url", ""),
+        "user_agent": data.get("user_agent", ""),
+        "screen": data.get("screen", ""),
+        "reported_at": data.get("timestamp", datetime.now().isoformat()),
+        "server_ts": datetime.now().isoformat()
+    }
+    bug_path = Path("logs/bug_reports.jsonl")
+    bug_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(bug_path, "a") as f:
+        f.write(json.dumps(bug_entry) + "\n")
+    logger.info(f"Bug report #{bug_entry['id']}: [{bug_entry['category']}] {description[:60]}")
+    return jsonify({"success": True, "id": bug_entry["id"]})
 
 
 @app.route("/api/logs/analytics")

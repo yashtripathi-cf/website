@@ -331,56 +331,150 @@
         "measurementMethod": "measurementMethod",
         "observationPeriod": "observationPeriod"
       }
+    },
+    "ndap_slum_population_statewise.csv": {
+      "provenance": "NDAP_NBO_SlumCompendium2015",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_slum_literacy_statewise.csv": {
+      "provenance": "NDAP_NBO_SlumCompendium2015",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_slum_work_participation_statewise.csv": {
+      "provenance": "NDAP_NBO_SlumCompendium2015",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_slum_households_statewise.csv": {
+      "provenance": "NDAP_NBO_SlumCompendium2015",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_vital_rates_statewise.csv": {
+      "provenance": "NDAP_NBO_SlumCompendium2015_SRS",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_population_density_statewise.csv": {
+      "provenance": "NDAP_NBO_SlumCompendium2015_Census",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_slum_housing_condition_statewise.csv": {
+      "provenance": "NDAP_NBO_SlumCompendium2015_Census",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_nhm_allocations_statewise.csv": {
+      "provenance": "NDAP_MoHFW_NHM_ROP",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
+    },
+    "ndap_nhm_ntep_allocation.csv": {
+      "provenance": "NDAP_MoHFW_NHM_ROP",
+      "format": "variablePerRow",
+      "columnMappings": {
+        "entity": "observationAbout",
+        "date": "observationDate",
+        "variable": "variableMeasured",
+        "value": "value",
+        "unit": "unit",
+        "measurementMethod": "measurementMethod",
+        "observationPeriod": "observationPeriod"
+      }
     }
   },
   "sources": {
-    "India Ministry of Commerce and Industry": {
-      "url": "https://tradestat.commerce.gov.in/",
-      "provenances": {
-        "Commodity Wise Export": "https://tradestat.commerce.gov.in/eidb/commodity_wise_export",
-        "Country Wise Export": "https://tradestat.commerce.gov.in/eidb/country_wise_export",
-        "Country Commodity Export": "https://tradestat.commerce.gov.in/eidb/country_commodity_export"
-      }
-    },
-    "Ministry of Statistics and Programme Implementation": {
-      "url": "https://esankhyiki.mospi.gov.in/",
-      "provenances": {
-        "MOSPI Consumer Price Index Data": "https://esankhyiki.mospi.gov.in/macroindicators?product=cpi",
-        "MOSPI Gross Domestic Product Data INR": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Domestic+Product+%28GDP%29",
-        "MOSPI Gross Domestic Product Data USD": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Domestic+Product+%28GDP%29",
-        "MOSPI Gross State Domestic Product Current Prices": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=GSDP",
-        "MOSPI Gross State Domestic Product Constant Prices": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=GSDP",
-        "MOSPI Annual Survey of Industries Data": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&product=ASI",
-        "MOSPI Nutritional Intake in India Data": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&product=Nutritional+Intake+in+India&search=",
-        "MOSPI GDP Second Revised Estimates": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Domestic+Product+%28GDP%29",
-        "MOSPI GDP First Advance Estimates": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Domestic+Product+%28GDP%29",
-        "MOSPI GSDP Constant Prices": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=GSDP",
-        "MOSPI GSDP Current Prices": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=GSDP",
-        "MOSPI GVA Second Advance Estimates": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Value+Added",
-        "MOSPI GVA First Advance Estimates": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Value+Added",
-        "MOSPI GVA Provisional Estimates": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Value+Added",
-        "MOSPI GVA Second Revised Estimates": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Value+Added",
-        "MOSPI GVA Third Revised Estimates": "https://esankhyiki.mospi.gov.in/catalogue-main/catalogue?page=0&search=&q=Gross+Value+Added",
-        "MOSPI Worker Population Ratio Data": "https://esankhyiki.mospi.gov.in/macroindicators?product=plfs"
-      }
-    },
-    "NITI Aayog": {
-      "url": "https://ndap.niti.gov.in/",
-      "provenances": {
-        "NITI Aayog State Population Projections": "https://ndap.niti.gov.in/dataset/7208",
-        "NITI Aayog State Urban Population Projections": "https://ndap.niti.gov.in/dataset/7209"
-      }
-    },
     "NCVBDC MoHFW": {
       "url": "https://ncvbdc.mohfw.gov.in/",
       "provenances": {
         "NDAP_NCVBDC_DengueSituation": "https://ncvbdc.mohfw.gov.in/index4.php?lang=1&level=0&linkid=431&lid=3715"
       }
     },
-    "Office of the Registrar General India": {
+    "National Buildings Organisation": {
       "url": "https://censusindia.gov.in/",
       "provenances": {
-        "NDAP_Census2011_PCA": "https://censusindia.gov.in/census.website/data/census-tables"
+        "NDAP_NBO_SlumCompendium2015": "https://nbo.gov.in/pdf/SLUMS_IN_INDIA_Slum_Compendium_2015_English.pdf"
+      }
+    },
+    "Department of Animal Husbandry and Dairying": {
+      "url": "https://dahd.gov.in/",
+      "provenances": {
+        "NDAP Milk Production State-wise": "https://www.nddb.coop/sites/default/files/statistics/milk_production_by_states_2025.pdf",
+        "NDAP Milk Per Capita Availability": "https://www.nddb.coop/sites/default/files/statistics/milk_production_in_india_2025_1.pdf"
+      }
+    },
+    "Central TB Division MoHFW": {
+      "url": "https://ncvbdc.mohfw.gov.in/",
+      "provenances": {
+        "NDAP TB Notifications Global": "https://www.who.int/teams/global-tuberculosis-programme/tb-reports/global-tuberculosis-report-2024",
+        "NDAP TB Notifications National": "https://tbcindia.mohfw.gov.in/wp-content/uploads/2024/10/TB-Report_for-Web_08_10-2024-1.pdf"
       }
     }
   }

@@ -106,27 +106,28 @@
     #main-nav {
       background: var(--ndap-navy) !important;
       border-bottom: 3px solid var(--ndap-orange);
-      padding: 0 24px;
+      padding: 6px 24px;
     }
     .ndap-brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       text-decoration: none;
     }
-    .ndap-brand img { height: 42px; width: auto; }
+    .ndap-brand:hover { text-decoration: none; }
+    .ndap-brand .ndap-banner-img { height: 56px; width: auto; }
     .ndap-brand-text b {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 900;
       color: #fff;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
       display: block;
       line-height: 1.1;
       font-family: 'Mulish', sans-serif;
     }
     .ndap-brand-text small {
-      font-size: 10px;
-      color: rgba(255,255,255,0.7);
+      font-size: 11px;
+      color: rgba(255,255,255,0.65);
       display: block;
       font-family: 'Mulish', sans-serif;
     }
@@ -236,12 +237,7 @@
       <nav class="navbar navbar-dark navbar-expand-lg col" id="main-nav">
         <div class="container-fluid">
           <a href="{{ url_for('static.homepage') }}" class="ndap-brand navbar-brand">
-            <img src="https://ndap.niti.gov.in/logo192.png" alt="NDAP"
-                 onerror="this.style.display='none'">
-            <div class="ndap-brand-text">
-              <b>NDAP</b>
-              <small>National Data &amp; Analytics Platform &nbsp;|&nbsp; NITI Aayog, Government of India</small>
-            </div>
+            <img src="/custom_dc/custom/ndap-logo.png" alt="NDAP" class="ndap-logo-combined">
           </a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#dc-main-nav">
             <span class="navbar-toggler-icon"></span>
@@ -304,6 +300,7 @@
       </div>
       <div class="ndap-foot-bottom">
         <span>© 2026 NITI Aayog, Government of India. All rights reserved.</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;color:#9fb0d2;">Powered by <a href="https://datacommons.org" target="_blank" rel="noopener" style="text-decoration:none;"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></a> <a href="https://datacommons.org" target="_blank" rel="noopener" style="color:#c4d1ea;text-decoration:none;">Data Commons</a></span>
         <span><a href="https://ndap.niti.gov.in/">ndap.niti.gov.in</a></span>
       </div>
     </footer>

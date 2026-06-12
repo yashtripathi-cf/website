@@ -34,18 +34,20 @@
   <script src="/datacommons.js"></script>
   <script>
     window.CHAT_CONFIG = {
-      PROMPT_VERSION: '1.5.0',  // Increment when prompts change to auto-invalidate localStorage
+      PROMPT_VERSION: '1.7.0',  // Increment when prompts change to auto-invalidate localStorage
       models: {
-        MCP_MODEL: 'gemini-3-flash-preview',
-        KB_MODEL: 'gemini-3-flash-preview'
+        MCP_MODEL: 'gemma4',
+        KB_MODEL: 'gemma4'
       },
       api: {
         GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models'
       },
       defaults: {
-        // Dynamic: uses same hostname as the page (works for localhost AND public IPs)
-        mcpProxyUrl: `${window.location.protocol}//${window.location.hostname}:5001`,
-        kbStoreId: 'fileSearchStores/msmepolicies-n3j470r9yrz3',
+        // Local dev: proxy runs on :5001; Cloud Run: same origin (nginx routes /api/* to proxy)
+        mcpProxyUrl: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+          ? window.location.protocol + '//' + window.location.hostname + ':5001'
+          : window.location.origin,
+        kbStoreId: 'fileSearchStores/ndappolicies-uttu1y12arkz',
         kbEnabled: false  // Knowledge base is OFF by default
       },
       systemInstructions: {
@@ -111,6 +113,63 @@ This instance includes **all public Data Commons data** plus custom India-specif
 - Meal Patterns: Average meals per person/household in rural and urban areas
 - Measurement Methods: Both adjusted and unadjusted estimates available
 - Years: 2023-2024
+
+**Custom Dataset 6: MOSPI Gross Value Added (GVA)**:
+- Sector-wise GVA: Agriculture, Mining, Manufacturing, Utilities, Construction, Services
+- Geographic: State-wise, years 2011-2023
+
+**Custom Dataset 7: MOSPI Worker Population Ratio (PLFS)**:
+- Rural, Urban, Education-wise worker population ratios
+- Geographic: State-wise, years 2017-2023
+
+**Custom Dataset 8: NITI Aayog Population Projections**:
+- Total, Urban, Gender-wise population projections 2011-2036
+- Geographic: State-wise
+
+**Custom Dataset 9: NDAP Milk Production & Per Capita Availability**:
+- State-wise milk production (tonnes, 2001-2024), National production + per capita availability (gms/day, 1991-2024)
+- Key DCIDs: NDAP_MilkProduction_Statewise, NDAP_MilkProduction_National, NDAP_MilkPCA_National
+
+**Custom Dataset 10: NDAP TB Notifications**:
+- National TB case notifications 2018-2023
+- Key DCID: NDAP_TBNotifications_National
+
+**Custom Dataset 11: NDAP PLFS Unemployment Rates**:
+- State-wise unemployment rates (2024) — total, male, female, rural, urban
+- Key DCIDs: NDAP_UnemploymentRate_Total/Male/Female/Rural/Urban
+
+**Custom Dataset 12: NDAP Dengue Case Notifications**:
+- State-wise and national dengue cases and deaths 2021-2025
+- Key DCIDs: NDAP_DengueCases_National, NDAP_DengueDeaths_National, NDAP_DengueCases_Statewise, NDAP_DengueDeaths_Statewise
+
+**Custom Dataset 13: NDAP Census 2011 Demographics**:
+- State-wise population (total/male/female), literacy, SC/ST population, workers, children 0-6
+- Key DCIDs: NDAP_Census2011_Population_Total/Male/Female, NDAP_Census2011_Literate_Total/Male/Female, etc.
+
+**Custom Dataset 14: Slums in India (Census 2011, NBO Compendium 2015)**:
+- State-wise slum demographics: population, % of urban, literacy rates, work participation, households, housing condition
+- Key DCIDs: NDAP_SlumPopulation_Statewise, NDAP_SlumPctOfUrban_Statewise, NDAP_SlumLiteracyRate_Total/Male/Female, NDAP_SlumWorkParticipation_Total/Male/Female, NDAP_SlumHouseholds_Total, NDAP_SlumHouseholdSize_Avg, NDAP_SlumHousing_Good/Livable/Dilapidated
+
+**Custom Dataset 15: Vital Statistics — Birth/Death/IMR (SRS 2013)**:
+- State-wise birth rate, death rate, natural growth rate, infant mortality rate
+- Key DCIDs: NDAP_BirthRate_Total, NDAP_DeathRate_Total, NDAP_NaturalGrowthRate_Total, NDAP_InfantMortalityRate_Total
+
+**Custom Dataset 16: Population Density (Census 2001 & 2011)**:
+- State-wise population density per sq km
+- Key DCID: NDAP_PopulationDensity_Total
+
+**Custom Dataset 17: National Health Mission (NHM) Allocations**:
+- NHM budget allocations by pool (RCH, NDCP, NCD, HSS-Urban, HSS-Rural, Total) in Rs. Lakhs
+- Available for: Sikkim, Telangana, Andhra Pradesh (2024-25)
+- Key DCIDs: NDAP_NHM_RCH_Allocation, NDAP_NHM_NDCP_Allocation, NDAP_NHM_NCD_Allocation, NDAP_NHM_HSSU_Allocation, NDAP_NHM_HSSR_Allocation, NDAP_NHM_Total_Allocation
+
+**Custom Dataset 18: NHM NTEP Allocations (State-wise)**:
+- State-wise NTEP (National Tuberculosis Elimination Programme) budget allocations from NHM ROP
+- Source: MoHFW NHM State Programme Implementation Plans
+- Geographic: wikidataId/Q#### for 15 states (AP, Bihar, Gujarat, Himachal, Kerala, Odisha, Rajasthan, Sikkim, Telangana, Tripura, UP, Uttarakhand, Jharkhand, Chhattisgarh, Ladakh)
+- Years: 2021-2025
+- Key DCID: NDAP_NHM_NTEP_Allocation
+- Units: Rs. Lakhs
 
 ### MOSPI Variable Reference (EXACT DCIDs - Use These Directly)
 
@@ -509,7 +568,12 @@ All queries are in the Indian government data context — NFHS surveys, PLFS lab
 - Cite at the page, table, or section level — never just "NFHS" or "Census"
 - If data is not in the documents, say so explicitly and suggest the official source
 
-**Multilingual**: Answer in the language of the query (Hindi, Tamil, etc.). Keep numbers in canonical form.
+**Multilingual & Script Matching (MANDATORY — HIGHEST PRIORITY)**:
+Detect the SCRIPT of the user's query and match it EXACTLY.
+- Roman/Latin script Hindi ("Bihar mein...", "dengue ke baare mein...") → respond in Roman/Latin script ONLY. Write Hindi words in English letters. ZERO Devanagari characters allowed.
+- Devanagari script (बिहार में...) → Devanagari response
+- English query → English response
+Keep numbers and dataset names in canonical form.
 
 ### Citation Format
 Use inline numbered citations [1], [2] and list sources at the end.
@@ -597,27 +661,19 @@ ALWAYS end your response with a Sources section.
 
 - Do NOT make claims without citations
 - Do NOT use phrases like "typically", "generally", "approximately" without source
-- Do NOT fill gaps with general knowledge
+- Do NOT fill gaps with general knowledge — NEVER use your training data to supplement
 - Do NOT hallucinate statistics, percentages, or rankings
 - Do NOT create state/sector comparisons unless data exists for ALL items
 - Do NOT invent trends, drivers, or key factors not in the data
 - Do NOT name specific states/companies unless they appear in the data
+- Do NOT cite external portals, websites, or URLs not listed in Source URLs section (e.g., no "enda portal", "census2011.co.in")
+- Do NOT suggest visiting any external website or portal
+- Do NOT mention "submit a data request" or link to docs.datacommons.org
+- NEVER go outside the provided DATA RESULTS and POLICY INFORMATION
 
-### When to Include Data Request Link
+### Data Request Link — NEVER INCLUDE
 
-**ONLY include the data request link when NO relevant data was found at all.**
-
-Include: "If you'd like to see this data in Data Commons, you can [submit a data request](https://docs.datacommons.org/contributing)."
-
-**ONLY when:**
-- The search found ZERO matching variables for the user's query
-- The query topic is completely outside our dataset coverage
-
-**DO NOT include the link when:**
-- You found data for SOME states/places (partial coverage is still useful)
-- You found related data that answers the core question
-- Data exists but for different time periods than requested
-- You successfully provided numerical answers with citations
+**NEVER suggest submitting a data request.** Do NOT include any variation of "submit a data request", "request this data", or links to docs.datacommons.org/contributing. If data is not available, simply state that clearly and suggest alternative queries from the available datasets.
 
 ### Response Structure
 
@@ -739,7 +795,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       align-items: center;
       gap: 8px;
       padding: 16px;
-      background: var(--gov-blue);
+      background: #14284b;
       color: white;
       font-weight: 600;
       font-size: 0.9rem;
@@ -1183,11 +1239,11 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: white;
+      background: #ffffff;
       border-radius: 0;
       border: none;
-      border-left: 1px solid var(--border-color);
-      border-right: 1px solid var(--border-color);
+      border-left: 1px solid #e8e8e8;
+      border-right: 1px solid #e8e8e8;
       overflow: hidden;
       min-height: 0;
     }
@@ -1196,7 +1252,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       flex: 1;
       overflow-y: auto;
       padding: 24px;
-      background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+      background: #ffffff;
       min-height: 0;
     }
 
@@ -1223,12 +1279,12 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     .message.user .message-avatar {
-      background: var(--gov-blue);
+      background: #14284b;
       color: white;
     }
 
     .message.assistant .message-avatar {
-      background: linear-gradient(135deg, var(--saffron) 0%, var(--green) 100%);
+      background: linear-gradient(135deg, #14284b 0%, #1d3a6e 100%);
       color: white;
     }
 
@@ -1241,7 +1297,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     .message.user .message-content {
-      background: var(--gov-blue);
+      background: #14284b;
       color: white;
       border-bottom-right-radius: 4px;
     }
@@ -1287,7 +1343,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       background: #f1f3f4;
       padding: 2px 6px;
       border-radius: 3px;
-      color: var(--gov-blue);
+      color: #14284b;
     }
 
     /* Markdown table styles */
@@ -1319,7 +1375,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .message-content h4, .message-content h5, .message-content h6 {
       margin: 16px 0 8px 0;
       font-weight: 600;
-      color: var(--gov-blue);
+      color: #14284b;
     }
 
     .message-content h1 { font-size: 1.4rem; }
@@ -1329,7 +1385,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
     /* Markdown blockquote styles */
     .message-content blockquote {
-      border-left: 3px solid var(--gov-blue);
+      border-left: 3px solid #14284b;
       margin: 12px 0;
       padding: 8px 16px;
       background: #f5f8ff;
@@ -1349,6 +1405,21 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.7; }
+    }
+
+    /* Approved source links in messages */
+    .source-link {
+      color: #2450a8;
+      text-decoration: underline;
+      text-decoration-color: rgba(36, 80, 168, 0.3);
+      transition: text-decoration-color 0.2s;
+    }
+    .source-link:hover {
+      text-decoration-color: #2450a8;
+    }
+    /* Non-approved source refs (plain text) */
+    .source-ref {
+      color: inherit;
     }
 
     /* Thinking/Reasoning Section - Inline in Chat */
@@ -1436,11 +1507,11 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .branding-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 10px 20px;
-      background: white;
-      border-bottom: 1px solid var(--border-color);
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 8px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #e8e8e8;
       flex-shrink: 0;
       transition: opacity 0.3s ease, filter 0.3s ease;
     }
@@ -1508,7 +1579,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       align-items: center;
       gap: 6px;
       padding: 6px 12px;
-      background: var(--gov-blue);
+      background: #14284b;
       color: white;
       border: none;
       border-radius: 6px;
@@ -1520,7 +1591,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     .new-chat-btn:hover {
-      background: #1a4a8a;
+      background: #1d3a6e;
       transform: scale(1.02);
     }
 
@@ -1541,15 +1612,43 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       }
     }
 
-    /* Welcome Message - Suggestions Only */
+    /* Welcome Message - Centered Branding + Suggestions */
     .welcome-message {
       text-align: center;
-      padding: 30px 20px;
+      padding: 40px 20px 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       flex: 1;
+      gap: 24px;
+    }
+
+    .welcome-branding {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .welcome-branding .welcome-logo {
+      height: 56px;
+      width: auto;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+
+    .welcome-branding h2 {
+      color: #14284b;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .welcome-branding .welcome-subtitle {
+      color: #888;
+      font-size: 0.9rem;
+      margin: 0;
     }
 
     .welcome-message .suggestions {
@@ -1561,20 +1660,20 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     .welcome-message .suggestion {
-      background: white;
-      border: 2px solid var(--border-color);
-      border-radius: 24px;
-      padding: 10px 20px;
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 10px 18px;
       cursor: pointer;
       transition: all 0.2s;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-dark);
     }
 
     .welcome-message .suggestion:hover:not(:disabled) {
-      border-color: var(--gov-blue);
-      background: #f0f7ff;
-      color: var(--gov-blue);
+      border-color: #14284b;
+      background: #f0f4ff;
+      color: #14284b;
     }
 
     .welcome-message .suggestion:disabled {
@@ -1623,9 +1722,9 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
     /* Chat Input Area */
     .chat-input-area {
-      background: white;
-      border-top: 1px solid var(--border-color);
-      padding: 16px 24px;
+      background: #ffffff;
+      border-top: 1px solid #e8e8e8;
+      padding: 14px 24px;
       flex-shrink: 0;
     }
 
@@ -1641,27 +1740,30 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
     #chat-input {
       width: 100%;
-      border: 2px solid var(--border-color);
+      border: 1.5px solid #d0d5dd;
       border-radius: 26px;
       padding: 0 20px;
       font-size: 1rem;
       resize: none;
-      height: 52px;
-      line-height: 52px;
+      height: 50px;
+      line-height: 50px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
       font-family: inherit;
       overflow: hidden;
       vertical-align: middle;
+      background: #fafafa;
     }
 
     #chat-input::placeholder {
-      line-height: 52px;
+      line-height: 50px;
+      color: #aaa;
     }
 
     #chat-input:focus {
-      border-color: var(--gov-blue);
-      box-shadow: 0 0 0 4px rgba(0, 51, 102, 0.1);
+      border-color: #14284b;
+      box-shadow: 0 0 0 3px rgba(20, 40, 75, 0.12);
+      background: #fff;
     }
 
     #chat-input:disabled {
@@ -1670,12 +1772,12 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     #send-btn {
-      background: var(--gov-blue);
+      background: #14284b;
       color: white;
       border: none;
       border-radius: 50%;
-      width: 52px;
-      height: 52px;
+      width: 50px;
+      height: 50px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -1685,7 +1787,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     #send-btn:hover:not(:disabled) {
-      background: var(--gov-blue-light);
+      background: #1d3a6e;
       transform: scale(1.05);
     }
 
@@ -1713,10 +1815,10 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     #mic-btn {
       background: transparent;
       color: var(--text-muted);
-      border: 2px solid var(--border-color);
+      border: 1.5px solid #d0d5dd;
       border-radius: 50%;
-      width: 52px;
-      height: 52px;
+      width: 50px;
+      height: 50px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -1726,8 +1828,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     #mic-btn:hover:not(:disabled) {
-      border-color: var(--gov-blue);
-      color: var(--gov-blue);
+      border-color: #14284b;
+      color: #14284b;
     }
 
     #mic-btn:disabled {
@@ -1837,7 +1939,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .typing-indicator span {
       width: 10px;
       height: 10px;
-      background: var(--gov-blue);
+      background: #14284b;
       border-radius: 50%;
       animation: typing 1.4s infinite ease-in-out;
     }
@@ -1855,7 +1957,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .streaming-cursor {
       display: inline-block;
       animation: blink 0.8s infinite;
-      color: var(--gov-blue);
+      color: #14284b;
       font-weight: normal;
     }
 
@@ -1911,6 +2013,120 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       font-weight: 500;
     }
 
+    /* Report Bug Button */
+    .report-bug-btn {
+      background: none;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .report-bug-btn:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: #fef2f2;
+    }
+    .report-bug-btn svg { width: 14px; height: 14px; }
+
+    /* Bug Report Modal */
+    .bug-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+    .bug-modal-overlay.active { display: flex; }
+    .bug-modal {
+      background: #fff;
+      border-radius: 12px;
+      width: 480px;
+      max-width: 92vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 28px;
+    }
+    .bug-modal h3 {
+      margin: 0 0 6px;
+      font-size: 1.15rem;
+      color: #14284b;
+    }
+    .bug-modal .bug-subtitle {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-bottom: 20px;
+    }
+    .bug-modal label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+    .bug-modal select,
+    .bug-modal textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .bug-modal select:focus,
+    .bug-modal textarea:focus {
+      outline: none;
+      border-color: #2450a8;
+      box-shadow: 0 0 0 3px rgba(36,80,168,0.1);
+    }
+    .bug-modal textarea { resize: vertical; min-height: 100px; }
+    .bug-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .bug-modal-actions button {
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .bug-cancel-btn {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .bug-cancel-btn:hover { background: #e5e7eb; }
+    .bug-submit-btn {
+      background: #2450a8;
+      color: #fff;
+    }
+    .bug-submit-btn:hover { background: #1a3d8f; }
+    .bug-submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .bug-success-msg {
+      text-align: center;
+      padding: 24px 0;
+      color: #059669;
+      font-weight: 600;
+    }
+
     .google-footer a:hover {
       text-decoration: underline;
     }
@@ -1921,11 +2137,11 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       gap: 12px;
       margin-top: 12px;
       padding: 10px 16px;
-      background: #fff8e1;
-      border: 1px solid #ffe082;
+      background: #14284b;
+      border: none;
       border-radius: 6px;
       font-size: 0.75rem;
-      color: #5d4037;
+      color: #cdd8ec;
       line-height: 1.5;
       text-align: left;
       width: 100%;
@@ -1936,7 +2152,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     }
 
     .disclaimer-notice strong {
-      color: #e65100;
+      color: #f6821f;
     }
 
     .disclaimer-text {
@@ -1946,7 +2162,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .disclaimer-close {
       background: none;
       border: none;
-      color: #5d4037;
+      color: #cdd8ec;
       font-size: 1.2rem;
       cursor: pointer;
       padding: 0;
@@ -2658,18 +2874,18 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     .lp-gov-strip a:hover { color: #fff; }
 
     /* Header */
-    .lp-header { background: #fff; border-bottom: 1px solid #e3e9f2; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 10px rgba(20,40,75,.05); }
+    .lp-header { background: #14284b; border-bottom: 3px solid #f6821f; position: sticky; top: 0; z-index: 50; }
     .lp-nav { display: flex; align-items: center; justify-content: space-between; height: 74px; gap: 24px; }
     .lp-brand { display: flex; align-items: center; gap: 12px; }
     .lp-brand img { height: 46px; width: auto; }
     .lp-brand-text b { font-size: 21px; font-weight: 900; color: #14284b; letter-spacing: .5px; display: block; line-height: 1.1; }
     .lp-brand-text small { font-size: 10.5px; color: #5b6b82; display: block; }
-    .lp-nav-links { display: flex; align-items: center; gap: 24px; font-weight: 700; font-size: 15px; color: #14284b; }
-    .lp-nav-links a { padding: 6px 0; border-bottom: 2.5px solid transparent; transition: .2s; }
-    .lp-nav-links a:hover { color: #14284b; border-color: #f6821f; }
+    .lp-nav-links { display: flex; align-items: center; gap: 24px; font-weight: 700; font-size: 15px; color: #fff; }
+    .lp-nav-links a { padding: 6px 0; border-bottom: 2.5px solid transparent; transition: .2s; color: #fff; }
+    .lp-nav-links a:hover { color: #fff; border-color: #f6821f; }
     .lp-nav-cta { display: flex; gap: 10px; align-items: center; }
-    .lp-btn-outline { border: 2px solid #14284b; color: #14284b; background: #fff; border-radius: 8px; font: 800 14px 'Mulish', sans-serif; padding: 9px 18px; cursor: pointer; transition: .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-    .lp-btn-outline:hover { background: #e9f0fb; }
+    .lp-btn-outline { border: 2px solid #fff !important; color: #fff !important; background: transparent !important; border-radius: 8px; font: 800 14px 'Mulish', sans-serif; padding: 9px 18px; cursor: pointer; transition: .2s; text-decoration: none !important; display: inline-flex; align-items: center; gap: 6px; }
+    .lp-btn-outline:hover { background: rgba(255,255,255,0.1) !important; color: #fff !important; }
     .lp-btn-solid { background: #14284b; color: #fff; border: 2px solid #14284b; border-radius: 8px; font: 800 14px 'Mulish', sans-serif; padding: 9px 18px; cursor: pointer; transition: .2s; display: inline-flex; align-items: center; gap: 6px; }
     .lp-btn-solid:hover { background: #1a3a7a; }
 
@@ -2811,11 +3027,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     <header class="lp-header">
       <div class="lp-container lp-nav">
         <a class="lp-brand" href="#" onclick="return false;">
-          <img src="https://ndap.niti.gov.in/logo192.png" alt="NDAP" onerror="this.style.display='none'">
-          <div class="lp-brand-text">
-            <b>NDAP</b>
-            <small>National Data &amp; Analytics Platform &nbsp;|&nbsp; NITI Aayog, Government of India</small>
-          </div>
+          <img src="/custom_dc/custom/ndap-logo.png" alt="NDAP" style="height:52px;width:auto;">
         </a>
         <nav class="lp-nav-links">
           <a href="#lp-sectors">Sectors</a>
@@ -3029,7 +3241,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     <!-- CTA -->
     <div class="lp-cta">
       <h2>Start exploring India's government data</h2>
-      <p>Powered by Google Data Commons + Gemini AI &nbsp;•&nbsp; Built by CloudSufi for NITI Aayog</p>
+      <p>AI-powered Data Intelligence &nbsp;•&nbsp; Built by CloudSufi for NITI Aayog</p>
       <button class="lp-cta-btn" onclick="startNDAPChat()">Open AI Data Agent →</button>
     </div>
 
@@ -3103,10 +3315,9 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
     <main class="main-content">
       <!-- Static Branding Header -->
       <div class="branding-header inactive" id="branding-header">
-        <a href="/" class="branding-icon">DA</a>
         <div class="branding-text">
-          <h2>Data <span style="color: var(--saffron);">Agent</span></h2>
-          <p class="branding-tagline">Your Intelligent Companion | आपका बुद्धिमान सहायक</p>
+          <h2 style="color: #14284b;">Data Agent</h2>
+          <p class="branding-tagline" style="color: #888; font-size: 0.8rem;">NDAP Data Intelligence Platform</p>
         </div>
         <span class="branding-status">• Configure settings</span>
         <div class="header-controls">
@@ -3168,12 +3379,16 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       <div class="chat-area">
         <div class="chat-messages" id="chat-messages">
           <div class="welcome-message" id="welcome-message">
+            <div class="welcome-branding">
+              <h2>Data Agent</h2>
+              <p class="welcome-subtitle">NDAP Data Intelligence Platform</p>
+            </div>
             <div class="suggestions">
-              <button class="suggestion" data-text="Compare milk production across all states of India from 2001 to 2023" disabled>Compare milk production across all states of India from 2001 to 2023</button>
-              <button class="suggestion" data-text="बिहार में NFHS-5 के अनुसार बाल पोषण की स्थिति क्या है?" disabled>बिहार में NFHS-5 के अनुसार बाल पोषण की स्थिति क्या है?</button>
-              <button class="suggestion" data-text="Show dengue cases and deaths across all states from 2021 to 2024" disabled>Show dengue cases and deaths across all states from 2021 to 2024</button>
-              <button class="suggestion" data-text="Compare unemployment rates: Maharashtra, Kerala, Bihar, Jharkhand" disabled>Compare unemployment rates: Maharashtra, Kerala, Bihar, Jharkhand</button>
-              <button class="suggestion" data-text="What will India's GDP be in 2030?" disabled>What will India's GDP be in 2030?</button>
+              <button class="suggestion" data-text="Compare milk production across all states of India from 2001 to 2023" disabled>Compare milk production across all states</button>
+              <button class="suggestion" data-text="बिहार में NFHS-5 के अनुसार बाल पोषण की स्थिति क्या है?" disabled>बिहार NFHS-5 बाल पोषण (Hindi)</button>
+              <button class="suggestion" data-text="Show dengue cases and deaths across all states from 2021 to 2024" disabled>Dengue cases across states 2021-2024</button>
+              <button class="suggestion" data-text="Compare unemployment rates: Maharashtra, Kerala, Bihar, Jharkhand" disabled>Compare state unemployment rates</button>
+              <button class="suggestion" data-text="What will India's GDP be in 2030?" disabled>India's GDP forecast 2030</button>
             </div>
           </div>
         </div>
@@ -3205,14 +3420,17 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         </div>
       </div>
 
-      <!-- Google Data Commons Footer -->
+      <!-- NDAP Data Commons Footer -->
       <footer class="google-footer">
         <div class="google-footer-content">
-          <span>Powered by</span>
-          <span class="google-logo">
-            <span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span>
-          </span>
-          <a href="https://datacommons.org" target="_blank" rel="noopener">Data Commons</a>
+          <span style="color: #9aa0a6;">Powered by</span>
+          <a href="https://datacommons.org" target="_blank" rel="noopener" style="text-decoration: none; margin-left: 6px;"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></a>
+          <a href="https://datacommons.org" target="_blank" rel="noopener" style="text-decoration: none; color: #70757a; margin-left: 6px; font-weight: 400;">Data Commons</a>
+          <span style="margin: 0 4px; color: #d1d5db;">|</span>
+          <button class="report-bug-btn" id="report-bug-btn" title="Report a bug">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Report Bug
+          </button>
         </div>
         <div class="disclaimer-notice" id="disclaimer-notice">
           <div class="disclaimer-text">
@@ -3221,6 +3439,33 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
           <button class="disclaimer-close" id="disclaimer-close" title="Dismiss disclaimer">&times;</button>
         </div>
       </footer>
+
+      <!-- Bug Report Modal -->
+      <div class="bug-modal-overlay" id="bug-modal-overlay">
+        <div class="bug-modal" id="bug-modal">
+          <h3>Report a Bug</h3>
+          <p class="bug-subtitle">Help us improve by describing the issue you encountered.</p>
+          <div id="bug-form-content">
+            <label for="bug-category">Category</label>
+            <select id="bug-category">
+              <option value="incorrect-data">Incorrect data / wrong answer</option>
+              <option value="chart-issue">Chart not rendering properly</option>
+              <option value="ui-issue">UI / display issue</option>
+              <option value="slow-response">Slow or no response</option>
+              <option value="crash-error">Crash / error message</option>
+              <option value="other">Other</option>
+            </select>
+            <label for="bug-description">Description <span style="color:#ef4444">*</span></label>
+            <textarea id="bug-description" placeholder="Describe the issue you encountered. Include the query you asked if relevant."></textarea>
+            <label for="bug-expected">Expected behavior (optional)</label>
+            <textarea id="bug-expected" placeholder="What did you expect to happen?" style="min-height:60px"></textarea>
+            <div class="bug-modal-actions">
+              <button class="bug-cancel-btn" id="bug-cancel-btn">Cancel</button>
+              <button class="bug-submit-btn" id="bug-submit-btn" disabled>Submit Report</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Right Sidebar - Settings (hidden by default, toggle with Dev switch) -->
@@ -3266,7 +3511,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
               <span style="font-weight: 600; color: var(--green);">Backend Mode Active</span>
             </div>
             <p style="margin: 0; font-size: 0.85rem; color: var(--text-dark);">
-              All Gemini API calls will go through the backend server.<br>
+              All AI model calls go through the backend server.<br>
               Configuration is managed in <code>config.json</code>
             </p>
             <div id="backend-config-info" style="margin-top: 12px; font-size: 0.8rem; color: var(--text-muted);"></div>
@@ -3275,8 +3520,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
           <div style="margin-top: 12px;">
             <label for="backend-model-select" style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-dark); margin-bottom: 6px;">AI Model (backend)</label>
             <select id="backend-model-select" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 8px; background: white; color: var(--text-dark); font-size: 0.85rem; cursor: pointer;">
-              <option value="">Auto (default from config.json)</option>
-              <option value="gemini">Gemini 3 Flash</option>
+              <option value="gemma4">Gemma 4 27B (Default)</option>
+              <option value="gemini">Flash (Fast)</option>
               <option value="openrouter">Gemma 3 27B</option>
               <option value="sarvam">Sarvam AI</option>
             </select>
@@ -3287,21 +3532,21 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         <!-- Frontend Settings (hidden when backend mode selected) -->
         <div id="frontend-settings">
         <div class="config-section">
-          <label for="api-key-input">Gemini API Key</label>
-          <input type="password" id="api-key-input" placeholder="Enter your Gemini API key">
+          <label for="api-key-input">API Key</label>
+          <input type="password" id="api-key-input" placeholder="Enter your API key">
         </div>
 
         <div class="config-section">
-          <label for="model-select">Gemini Model</label>
+          <label for="model-select">AI Model</label>
           <select id="model-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; background: white; color: var(--text-dark); font-size: 0.9rem;">
-            <option value="gemini-3-flash-preview">Gemini 3 Flash Preview (Default)</option>
-            <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
+            <option value="gemma4">Gemma 4 27B (Default)</option>
+            <option value="gemini-3-pro-preview">Pro Preview</option>
           </select>
         </div>
 
         <div class="config-section">
           <label for="mcp-url-input">MCP Proxy URL</label>
-          <input type="text" id="mcp-url-input" placeholder="http://localhost:5001" value="http://localhost:5001">
+          <input type="text" id="mcp-url-input" placeholder="auto-detected" value="">
           <div class="config-toggle">
             <span>MCP Tools</span>
             <span class="status-badge" id="mcp-status">Disconnected</span>
@@ -3314,7 +3559,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
         <div class="config-section">
           <label for="kb-store-input">Knowledge Base</label>
-          <input type="text" id="kb-store-input" placeholder="fileSearchStores/your-store-id" value="fileSearchStores/msmepolicies-n3j470r9yrz3">
+          <input type="text" id="kb-store-input" placeholder="fileSearchStores/your-store-id" value="fileSearchStores/ndappolicies-uttu1y12arkz">
           <div class="config-toggle">
             <span>Knowledge Base</span>
             <span class="status-badge" id="kb-status">Inactive</span>
@@ -3326,7 +3571,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         </div>
 
         <div class="config-section">
-          <label>Thinking Budget (Gemini 3)</label>
+          <label>Thinking Budget</label>
           <div style="display: flex; gap: 8px; margin-top: 4px;">
             <div style="flex: 1;">
               <label for="mcp-thinking-input" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; display: block;">MCP Prompt</label>
@@ -3435,8 +3680,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         },
         required: ["should_render"]
       };
-      const MCP_MODEL = config?.models?.MCP_MODEL || 'gemini-3-flash-preview';
-      const KB_MODEL = config?.models?.KB_MODEL || 'gemini-3-flash-preview';
+      const MCP_MODEL = config?.models?.MCP_MODEL || 'gemma4';
+      const KB_MODEL = config?.models?.KB_MODEL || 'gemma4';
 
       // Helper function to get current date/time in Indian format
       function getCurrentDateTimeIST() {
@@ -3476,7 +3721,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       // Console log configuration on load
       console.group('🔧 Chat Configuration Loaded');
       console.log('API Base:', GEMINI_API_BASE);
-      console.log('Selected Model:', localStorage.getItem('selected_model') || 'gemini-3-flash-preview');
+      console.log('Selected Model:', localStorage.getItem('selected_model') || 'gemma4');
       console.log('Default MCP Proxy URL:', config?.defaults?.mcpProxyUrl);
       console.log('Default KB Store ID:', config?.defaults?.kbStoreId);
       console.groupEnd();
@@ -3509,15 +3754,15 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
       // Migration: Clear stale localhost proxy URLs when accessing from external IP
       // This ensures users get the correct dynamic URL based on their access method
-      const PROXY_URL_VERSION = 'proxy_url_v5';
+      const PROXY_URL_VERSION = 'proxy_url_v6';
       if (!localStorage.getItem(PROXY_URL_VERSION)) {
         const savedProxyUrl = localStorage.getItem('mcp_proxy_url') || '';
         const isLocalAccess = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const hasStalelocalhost = savedProxyUrl.includes('localhost') || savedProxyUrl.includes('127.0.0.1');
+        const hasStaleUrl = savedProxyUrl.includes('localhost') || savedProxyUrl.includes('127.0.0.1') || savedProxyUrl.includes(':5001');
 
-        // Clear if: accessing from external IP but have localhost URL cached
-        if (!isLocalAccess && hasStalelocalhost) {
-          console.log('Clearing stale localhost proxy URL:', savedProxyUrl);
+        // Clear if: accessing from external IP but have stale localhost/port URL cached
+        if (!isLocalAccess && hasStaleUrl) {
+          console.log('Clearing stale proxy URL:', savedProxyUrl);
           localStorage.removeItem('mcp_proxy_url');
         }
         localStorage.setItem(PROXY_URL_VERSION, 'true');
@@ -3526,13 +3771,19 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
       // State
       let geminiApiKey = localStorage.getItem('gemini_api_key') || '';
       // Dynamic default: uses same hostname as page (works for localhost AND public IPs)
-      let mcpProxyUrl = localStorage.getItem('mcp_proxy_url') || config.defaults?.mcpProxyUrl || dynamicProxyUrl;
+      // Always prefer the dynamic URL based on current hostname — stale localStorage
+      // from a different host (e.g. localhost vs public IP) causes connection failures
+      const dynamicProxyUrl = window.location.origin;
+      const savedProxyUrl = localStorage.getItem('mcp_proxy_url');
+      let mcpProxyUrl = (savedProxyUrl && new URL(savedProxyUrl).hostname === window.location.hostname)
+        ? savedProxyUrl
+        : (config.defaults?.mcpProxyUrl || dynamicProxyUrl);
       
       let mcpEnabled = localStorage.getItem('mcp_enabled') !== 'false';
-      let kbStoreId = localStorage.getItem('kb_store_id') || config.defaults?.kbStoreId || 'fileSearchStores/msmepolicies-n3j470r9yrz3';
+      let kbStoreId = localStorage.getItem('kb_store_id') || config.defaults?.kbStoreId || 'fileSearchStores/ndappolicies-uttu1y12arkz';
       // Knowledge base is OFF by default - only enable if explicitly set to 'true' in localStorage
       let kbEnabled = localStorage.getItem('kb_enabled') === 'true' ? true : (config.defaults?.kbEnabled ?? false);
-      let selectedModel = localStorage.getItem('selected_model') || 'gemini-3-flash-preview';
+      let selectedModel = localStorage.getItem('selected_model') || 'gemma4';
       let mcpTools = [];
       let mcpConnected = false;
       let conversationHistory = [];
@@ -3714,22 +3965,24 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
           }
         };
 
+        // Persistent accumulator for finalized speech segments
+        let accumulatedFinalTranscript = '';
+
         speechRecognition.onresult = (event) => {
           let interimTranscript = '';
-          let finalTranscript = '';
 
           for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript;
+              accumulatedFinalTranscript += event.results[i][0].transcript;
             } else {
               interimTranscript += event.results[i][0].transcript;
             }
           }
 
-          // Update the chat input with the transcription
+          // Update the chat input with accumulated final + current interim
           const chatInput = document.getElementById('chat-input');
           if (chatInput) {
-            chatInput.value = finalTranscript + interimTranscript;
+            chatInput.value = accumulatedFinalTranscript + interimTranscript;
             // Trigger auto-resize
             chatInput.style.height = 'auto';
             chatInput.style.height = Math.min(chatInput.scrollHeight, 150) + 'px';
@@ -3748,6 +4001,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
         if (isRecording) {
           speechRecognition.stop();
         } else {
+          // Reset accumulator when starting a new recording session
+          accumulatedFinalTranscript = '';
           try {
             speechRecognition.start();
           } catch (e) {
@@ -4706,7 +4961,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
           return '';
         }
 
-        const { vizType, variableDcid, variableName, placeDcids, unit, parentPlace, childPlaceType, labels, variableDcids, date } = chartData;
+        const { vizType, variableDcid, variableName, placeDcids, unit, parentPlace, childPlaceType, labels, variableDcids, date, startDate, endDate, dates } = chartData;
         const containerId = `dc-viz-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const latestDate = labels && labels.length > 0 ? labels[labels.length - 1] : '';
         const safeHeader = escapeHtml(variableName || 'Data Visualization');
@@ -4739,7 +4994,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                 variable="${variableDcid}"
                 parentPlace="${safeParentPlace}"
                 childPlaceType="${safeChildPlaceType}"
-                ${latestDate ? `date="${latestDate}"` : ''}
+                ${safeDate || latestDate ? `date="${safeDate || latestDate}"` : ''}
                 colors="#f0f9e8 #08589e"
                 allowZoom
               ></datacommons-map>`;
@@ -4752,6 +5007,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                 header="${safeHeader}"
                 variables="${safeVariables}"
                 places="${safePlaces || safeParentPlace}"
+                ${startDate ? `startDate="${startDate}"` : ''}
+                ${endDate ? `endDate="${endDate}"` : ''}
               ></datacommons-line>`;
             break;
 
@@ -4763,7 +5020,6 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                   header="${safeHeader}"
                   variables="${safeVariables}"
                   places="${safePlaces}"
-                  ${safeDate ? `date="${safeDate}"` : ''}
                   sort="descending"
                 ></datacommons-bar>`;
             } else {
@@ -4774,7 +5030,6 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                   variables="${safeVariables}"
                   parentPlace="${safeParentPlace}"
                   childPlaceType="${safeChildPlaceType}"
-                  ${safeDate ? `date="${safeDate}"` : ''}
                   sort="descending"
                 ></datacommons-bar>`;
             }
@@ -4823,6 +5078,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                 header="${safeHeader}"
                 place="${(placeDcids && placeDcids[0]) || safeParentPlace}"
                 variable="${variableDcid}"
+                ${safeDate ? `date="${safeDate}"` : ''}
               ></datacommons-highlight>`;
             break;
 
@@ -4851,6 +5107,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                 variable="${variableDcid}"
                 parentPlace="${safeParentPlace}"
                 childPlaceType="${safeChildPlaceType}"
+                ${dates ? `dates="${dates}"` : ''}
                 colors="#f0f9e8 #08589e"
               ></datacommons-slider>`;
             break;
@@ -4863,6 +5120,8 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                 header="${safeHeader}"
                 variables="${safeVariables}"
                 places="${safePlaces || safeParentPlace}"
+                ${startDate ? `startDate="${startDate}"` : ''}
+                ${endDate ? `endDate="${endDate}"` : ''}
               ></datacommons-line>`;
         }
 
@@ -4946,7 +5205,10 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
               parentPlace: chart.parent_place || 'country/IND',
               childPlaceType: chart.child_place_type || 'State',
               unit: chart.unit || '',
-              date: chart.date || ''
+              date: chart.date || '',
+              startDate: chart.startDate || '',
+              endDate: chart.endDate || '',
+              dates: chart.dates || ''
             };
 
             console.log(`Chart ${chartsRendered + 1}:`, dcChartData.variableName);
@@ -5280,7 +5542,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
 
         // Handle Frontend Mode (original logic)
         const key = apiKeyInput.value.trim();
-        const model = modelSelect?.value || 'gemini-3-flash-preview';
+        const model = modelSelect?.value || 'gemma4';
         const enabled = mcpEnabledCheckbox.checked;
         const kbStore = kbStoreInput.value.trim();
         const kbOn = kbEnabledCheckbox.checked;
@@ -5470,10 +5732,16 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
           const data = await response.json();
           if (data.success && data.config) {
             // Use proxy_url from config if provided (allows central configuration)
-            // NOTE: Don't save to localStorage - backend config is source of truth
+            // BUT: ignore localhost proxy_url when page is accessed via public IP
+            // (server config.json always says localhost; the dynamic URL is correct)
             if (data.config.proxy_url) {
-              mcpProxyUrl = data.config.proxy_url;
-              console.log('Using proxy_url from backend config:', mcpProxyUrl);
+              const configUrl = new URL(data.config.proxy_url);
+              const isConfigLocal = configUrl.hostname === 'localhost' || configUrl.hostname === '127.0.0.1';
+              const isPageLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+              if (!isConfigLocal || isPageLocal) {
+                mcpProxyUrl = data.config.proxy_url;
+              }
+              console.log('Backend proxy_url:', data.config.proxy_url, '| Using:', mcpProxyUrl);
               // Update the input field if it exists
               const mcpUrlInput = document.getElementById('mcp-url-input');
               if (mcpUrlInput) mcpUrlInput.value = mcpProxyUrl;
@@ -5483,12 +5751,13 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             const configInfo = document.getElementById('backend-config-info');
             if (configInfo) {
               configInfo.innerHTML = `
-                <div><strong>Proxy:</strong> ${data.config.proxy_url || mcpProxyUrl}</div>
                 <div><strong>Model:</strong> ${(() => {
-                  const sel = document.getElementById('backend-model-select')?.value;
-                  if (sel === 'openrouter') return data.config.openrouter?.mcp_model || 'Gemma 3 27B';
-                  if (sel === 'sarvam') return data.config.sarvam?.synthesis_model || 'Sarvam AI';
-                  return data.config.gemini?.mcp_model || 'Gemini Flash';
+                  const sel = document.getElementById('backend-model-select')?.value || localStorage.getItem('backend_model_override') || 'gemma4';
+                  if (sel === 'gemma4') return 'Gemma 4 27B';
+                  if (sel === 'openrouter') return 'Gemma 3 27B';
+                  if (sel === 'sarvam') return 'Sarvam AI';
+                  if (sel === 'gemini') return 'Flash (Fast)';
+                  return 'Gemma 4 27B';
                 })()}</div>
                 <div><strong>MCP:</strong> ${data.config.mcp?.enabled ? 'Enabled' : 'Disabled'}</div>
                 <div><strong>KB:</strong> ${data.config.knowledge_base?.enabled ? 'Enabled' : 'Disabled'}</div>
@@ -5561,23 +5830,33 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
           let fullText = '';
           let chartConfig = null;
           let durationMs = null;
+          let indicatorsSearched = 0;
+          let toolCallsCount = 0;
+          let mcpIterations = 0;
+          let isCached = false;
           let totalTokens = null;
           let inputTokens = null;
           let outputTokens = null;
           let costUsd = null;
 
+          let sseBuffer = '';  // Buffer for incomplete SSE lines across chunks
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
 
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
+            sseBuffer += decoder.decode(value, { stream: true });
+            const lines = sseBuffer.split('\n');
+            // Keep the last (potentially incomplete) line in the buffer
+            sseBuffer = lines.pop() || '';
 
             for (const line of lines) {
               if (!line.startsWith('data: ')) continue;
 
               try {
                 const data = JSON.parse(line.slice(6));
+
+                // Reset watchdog on any SSE event
+                if (streamingMessage.heartbeat) streamingMessage.heartbeat();
 
                 // Capture and persist session ID
                 if (data.session_id) {
@@ -5645,6 +5924,10 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
                   if (data.input_tokens) inputTokens = data.input_tokens;
                   if (data.output_tokens) outputTokens = data.output_tokens;
                   if (data.cost_usd !== undefined) costUsd = data.cost_usd;
+                  if (data.indicators_searched !== undefined) indicatorsSearched = data.indicators_searched;
+                  if (data.tool_calls_count !== undefined) toolCallsCount = data.tool_calls_count;
+                  if (data.mcp_iterations !== undefined) mcpIterations = data.mcp_iterations;
+                  if (data.cached) isCached = true;
                 }
 
                 // Handle errors
@@ -5659,7 +5942,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             }
           }
 
-          return { text: fullText, chartConfig, sessionId: currentConversationSessionId, durationMs, totalTokens, inputTokens, outputTokens, costUsd };
+          return { text: fullText, chartConfig, sessionId: currentConversationSessionId, durationMs, totalTokens, inputTokens, outputTokens, costUsd, indicatorsSearched, toolCallsCount, mcpIterations, isCached };
 
         } catch (err) {
           console.error('Backend chat stream error:', err);
@@ -5682,7 +5965,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             sessionRow.style.cssText = 'margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1);';
             backendConfigInfo.appendChild(sessionRow);
           }
-          const proxyBase = localStorage.getItem('mcp_proxy_url') || 'http://localhost:5001';
+          const proxyBase = mcpProxyUrl || window.location.origin;
           sessionRow.innerHTML = `
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">Session ID:</div>
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -5897,7 +6180,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             };
 
             // Add tools if MCP is connected
-            const dataKeywords = /population|gdp|unemployment|rate|statistics|data|how many|what is the|number of|percent|average|median|income|health|economy|demographics|emissions|climate|crime|education|exports|imports|export|import|trade|dairy|agriculture|production|manufacturing|industry|growth|trend|value|amount|total|cpi|inflation|price|index|expenditure|food|consumer/i;
+            const dataKeywords = /population|gdp|unemployment|rate|statistics|data|how many|what is the|number of|percent|average|median|income|health|economy|demographics|emissions|climate|crime|education|exports|imports|export|import|trade|dairy|agriculture|production|manufacturing|industry|growth|trend|value|amount|total|cpi|inflation|price|index|expenditure|food|consumer|tb|tuberculosis|dengue|milk|census|slum|plfs|employment|labour|labor|lfpr|nhm|birth rate|death rate|infant mortality|imr|vital|mortality|aqi|air quality|pollution|pm2\.5|fertility|stunting|wasting|anaemia|vaccination|immunization|nfhs|livestock|animal husbandry/i;
             const isDataQuery = dataKeywords.test(userMessage);
 
             // For data queries, keep forcing tool calls until get_observations has been called
@@ -6246,8 +6529,35 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
             // Store reference for stop handling
             currentStreamingMessage = streamingMessage;
 
+            // Timeout watchdog: update UI if response takes too long
+            let lastEventTime = Date.now();
+            let receivedText = false;
+            const timeoutWatchdog = setInterval(() => {
+              const elapsed = Date.now() - lastEventTime;
+              if (!receivedText && elapsed > 45000) {
+                streamingMessage.setText('Agent is thinking... (this is taking longer than usual)');
+              }
+              if (!receivedText && elapsed > 180000) {
+                streamingMessage.setText('Request timed out. Please try again.');
+                clearInterval(timeoutWatchdog);
+                if (currentAbortController) currentAbortController.abort();
+              }
+            }, 5000);
+
+            // Patch streamingMessage to track last event time
+            const _origSetText = streamingMessage.setText;
+            streamingMessage.setText = (text) => {
+              if (text && !text.startsWith('Agent is thinking')) { lastEventTime = Date.now(); receivedText = true; }
+              _origSetText(text);
+            };
+            const _origAddThought = streamingMessage.addThought;
+            streamingMessage.addThought = (t, p) => { lastEventTime = Date.now(); _origAddThought(t, p); };
+            // Allow stream handler to reset watchdog on any SSE event (tool_calls, status, etc.)
+            streamingMessage.heartbeat = () => { lastEventTime = Date.now(); };
+
             // Call backend streaming API with abort signal
             const result = await backendChatStream(userMessage, streamingMessage, currentAbortController.signal);
+            clearInterval(timeoutWatchdog);
 
             // Clear pending query on successful completion
             pendingUserQuery = null;
@@ -6266,7 +6576,26 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
               const clockIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
               const coinIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
               const tokenIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`;
-              let html = `<span style="display:flex;align-items:center;gap:4px" title="Total execution time (MCP + KB + Synthesis)">${clockIcon} ${seconds}s total</span>`;
+              let html = '';
+              if (result.isCached) {
+                const boltIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+                html += `<span style="display:flex;align-items:center;gap:4px;color:#27ae60;font-weight:600" title="Response served from cache — identical to first query result">${boltIcon} Cached</span>`;
+              }
+              html += `<span style="display:flex;align-items:center;gap:4px" title="Total execution time (MCP + KB + Synthesis)">${clockIcon} ${seconds}s total</span>`;
+              if (result.indicatorsSearched > 0 || result.toolCallsCount > 0) {
+                const searchIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+                const layersIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>`;
+                // Complexity label based on iterations and tool calls
+                const complexity = result.mcpIterations >= 3 || result.toolCallsCount >= 5 ? 'Complex' : result.mcpIterations >= 2 || result.toolCallsCount >= 3 ? 'Moderate' : 'Simple';
+                const complexityColor = complexity === 'Complex' ? '#e67e22' : complexity === 'Moderate' ? '#3498db' : '#27ae60';
+                let detailParts = [];
+                if (result.indicatorsSearched > 0) detailParts.push(`${result.indicatorsSearched} indicator${result.indicatorsSearched !== 1 ? 's' : ''}`);
+                if (result.toolCallsCount > 0) detailParts.push(`${result.toolCallsCount} tool call${result.toolCallsCount !== 1 ? 's' : ''}`);
+                if (result.mcpIterations > 0) detailParts.push(`${result.mcpIterations} reasoning step${result.mcpIterations !== 1 ? 's' : ''}`);
+                const detailText = detailParts.join(', ');
+                html += `<span style="display:flex;align-items:center;gap:4px" title="${detailText}">${searchIcon} ${detailText}</span>`;
+                html += `<span style="display:flex;align-items:center;gap:4px;color:${complexityColor};font-weight:600" title="Query complexity: ${complexity} (${result.mcpIterations} iterations, ${result.toolCallsCount} tool calls)">${layersIcon} ${complexity}</span>`;
+              }
               if (result.inputTokens || result.outputTokens) {
                 const fmtTok = (n) => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n;
                 const inTok = result.inputTokens ? fmtTok(result.inputTokens) : '?';
@@ -6279,7 +6608,7 @@ When you receive **RAW MCP TOOL RESULTS**, you MUST:
               if (result.costUsd !== null && result.costUsd !== undefined) {
                 const costInr = result.costUsd * 95.36; // USD to INR (June 2026)
                 const costStr = costInr < 0.01 ? `₹${(costInr * 100).toFixed(2)} paise` : `₹${costInr.toFixed(2)}`;
-                html += `<span style="display:flex;align-items:center;gap:4px" title="Estimated API cost (Gemini Flash pricing, ~₹85/USD)">${coinIcon} ~${costStr} est.</span>`;
+                html += `<span style="display:flex;align-items:center;gap:4px" title="Estimated API cost (~₹85/USD)">${coinIcon} ~${costStr} est.</span>`;
               }
               durationEl.innerHTML = html;
               messageEl.querySelector('.message-content').appendChild(durationEl);
@@ -6526,12 +6855,9 @@ ${rawResultsJson}
             streamingMessage.setText(streamedText);
           }
 
-          // Add KB sources at the end if available
+          // Add KB sources at the end if available (plain text, no hyperlinks)
           if (kbSources.length > 0) {
-            const sourceLinks = kbSources.map(source => {
-              const url = kbSourceUrls[source];
-              return url ? `[${source}](${url})` : source;
-            });
+            const sourceLinks = kbSources.map(source => source);
             streamedText += '\n\n**Data Sources:** ' + sourceLinks.join(' | ');
             streamingMessage.setText(streamedText);
           }
@@ -6889,14 +7215,16 @@ ${rawResultsJson}
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
           let fullText = '';
+          let sseBuffer2 = '';  // Buffer for incomplete SSE lines
 
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
 
-            const chunk = decoder.decode(value, { stream: true });
+            sseBuffer2 += decoder.decode(value, { stream: true });
             // Parse SSE data - each chunk may have multiple "data:" lines
-            const lines = chunk.split('\n');
+            const lines = sseBuffer2.split('\n');
+            sseBuffer2 = lines.pop() || '';  // Keep incomplete last line
 
             for (const line of lines) {
               if (line.startsWith('data: ')) {
@@ -6935,13 +7263,37 @@ ${rawResultsJson}
         if (typeof marked !== 'undefined') {
           // Create custom renderer to open links in new tab
           const renderer = new marked.Renderer();
+          // Approved source domains — only these get rendered as clickable links
+          const APPROVED_DOMAINS = [
+            'esankhyiki.mospi.gov.in',
+            'tradestat.commerce.gov.in',
+            'ndap.niti.gov.in',
+            'censusindia.gov.in',
+            'datacommons.org',
+            'docs.datacommons.org',
+            'dahd.gov.in',
+            'tbcindia.gov.in',
+            'nhm.gov.in',
+            'mohua.gov.in',
+            'ncvbdc.mohfw.gov.in'
+          ];
           renderer.link = function(href, title, text) {
-            // Handle both old and new marked API
             const linkHref = typeof href === 'object' ? href.href : href;
             const linkTitle = typeof href === 'object' ? href.title : title;
             const linkText = typeof href === 'object' ? href.text : text;
-            const titleAttr = linkTitle ? ` title="${linkTitle}"` : '';
-            return `<a href="${linkHref}"${titleAttr} target="_blank" rel="noopener">${linkText}</a>`;
+            // Check if URL is from an approved source domain
+            let isApproved = false;
+            try {
+              if (linkHref) {
+                const url = new URL(linkHref);
+                isApproved = APPROVED_DOMAINS.some(d => url.hostname === d || url.hostname.endsWith('.' + d));
+              }
+            } catch(e) { /* invalid URL — not approved */ }
+            if (isApproved) {
+              return `<a href="${linkHref}" target="_blank" rel="noopener" class="source-link" title="${linkTitle || ''}">${linkText}</a>`;
+            }
+            // Non-approved: render as plain text (no clickable link)
+            return `<span class="source-ref">${linkText}</span>`;
           };
 
           marked.setOptions({
@@ -7002,11 +7354,10 @@ ${rawResultsJson}
             `<button class="followup-suggestion" data-query="${escapeHtml(s)}">${escapeHtml(s)}</button>`
           ).join('');
 
-          // Use conditional heading based on data availability
-          // Show normal follow-up heading if MCP has data OR KB answered the query
-          const hasData = currentDataStatus ? currentDataStatus.has_data : true;
-          const effectivelyAnswered = hasData || currentKbAnswered;
-          const followupHeading = effectivelyAnswered ? 'Follow up questions:' : 'Would you like to explore these instead?';
+          // Always use "Follow up questions:" heading.
+          // If the model generated a response with suggestions, it answered the query
+          // (even if MCP returned no structured data — KB or synthesis may have answered it).
+          const followupHeading = 'Follow up questions:';
 
           // Add container at end
           formatted += `<div class="followup-container"><div class="followup-heading">${followupHeading}</div>${suggestionsHtml}</div>`;
@@ -7165,12 +7516,12 @@ ${rawResultsJson}
       }
 
       /**
-       * Format no-data message with link to data request
+       * Format no-data message (no external links)
        * @param {string} message - The no-data message
-       * @returns {string} - Formatted message with link
+       * @returns {string} - The message as-is
        */
       function formatNoDataMessage(message) {
-        return `${message}\n\nIf you'd like to see this data in Data Commons, [submit a data request](https://docs.datacommons.org/contributing).`;
+        return message;
       }
 
       function escapeHtml(text) {
@@ -7372,29 +7723,110 @@ ${rawResultsJson}
       const backendModelSelect = document.getElementById('backend-model-select');
       if (backendModelSelect) {
         // Restore from localStorage and initialize override
-        const saved = localStorage.getItem('backend_model_override');
-        if (saved) {
-          backendModelSelect.value = saved;
-          window.__ndapModelOverride = saved || null;
-        }
+        const saved = localStorage.getItem('backend_model_override') || 'gemma4';
+        backendModelSelect.value = saved;
+        window.__ndapModelOverride = saved || 'gemma4';
 
         backendModelSelect.addEventListener('change', function() {
-          // Read the urlConfigOverrides object from inside the IIFE via a shared bridge
           const val = this.value;
           localStorage.setItem('backend_model_override', val);
-          // Patch URL params so the proxy picks it up on next request
           const url = new URL(window.location.href);
           if (val) {
             url.searchParams.set('model', val);
           } else {
             url.searchParams.delete('model');
           }
-          // Update URL without reload, so urlConfigOverrides picks it up next reload
-          // For immediate effect, expose the override via a global
           window.__ndapModelOverride = val || null;
           console.log('Backend model override set to:', val || '(auto)');
+          // Immediately update model display in config info
+          const modelLabel = {gemma4: 'Gemma 4 27B', openrouter: 'Gemma 3 27B', sarvam: 'Sarvam AI', gemini: 'Flash (Fast)'};
+          const configInfo = document.getElementById('backend-config-info');
+          if (configInfo) {
+            const modelDiv = configInfo.querySelector('div:nth-child(2)');
+            if (modelDiv) modelDiv.innerHTML = '<strong>Model:</strong> ' + (modelLabel[val] || 'Auto');
+          }
         });
       }
     });
+
+    // ── Bug Report Modal ─────────────────────────────────────────────────
+    (function() {
+      const overlay = document.getElementById('bug-modal-overlay');
+      const openBtn = document.getElementById('report-bug-btn');
+      const cancelBtn = document.getElementById('bug-cancel-btn');
+      const submitBtn = document.getElementById('bug-submit-btn');
+      const descInput = document.getElementById('bug-description');
+      const formContent = document.getElementById('bug-form-content');
+
+      function openModal() { overlay.classList.add('active'); descInput.focus(); }
+      function closeModal() {
+        overlay.classList.remove('active');
+        // Reset form after close
+        setTimeout(() => {
+          formContent.innerHTML !== undefined && resetForm();
+        }, 300);
+      }
+      function resetForm() {
+        document.getElementById('bug-category').value = 'incorrect-data';
+        descInput.value = '';
+        document.getElementById('bug-expected').value = '';
+        submitBtn.disabled = true;
+        // Restore form if it was replaced with success message
+        if (formContent.querySelector('.bug-success-msg')) {
+          location.reload(); // simplest reset after success
+        }
+      }
+
+      openBtn.addEventListener('click', openModal);
+      cancelBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal(); });
+
+      descInput.addEventListener('input', () => {
+        submitBtn.disabled = descInput.value.trim().length < 5;
+      });
+
+      submitBtn.addEventListener('click', async () => {
+        const description = descInput.value.trim();
+        if (description.length < 5) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        // Collect session context
+        const chatMessages = document.querySelectorAll('.message.user .message-text');
+        const recentQueries = Array.from(chatMessages).slice(-3).map(el => el.textContent.trim());
+        const bugReport = {
+          category: document.getElementById('bug-category').value,
+          description: description,
+          expected: document.getElementById('bug-expected').value.trim(),
+          session: window.currentConversationSessionId || null,
+          recent_queries: recentQueries,
+          url: window.location.href,
+          user_agent: navigator.userAgent,
+          screen: window.innerWidth + 'x' + window.innerHeight,
+          timestamp: new Date().toISOString()
+        };
+
+        try {
+          const mcpProxyUrl = window.CHAT_CONFIG.defaults.mcpProxyUrl;
+          const resp = await fetch(`${mcpProxyUrl}/api/bug-report`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(bugReport)
+          });
+          if (!resp.ok) throw new Error('Server error');
+          formContent.innerHTML = '<div class="bug-success-msg"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#059669" stroke-width="2" style="margin-bottom:12px"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg><br>Bug report submitted!<br><span style="font-weight:400;font-size:0.85rem;color:#6b7280">Thank you for helping us improve.</span></div>';
+          setTimeout(closeModal, 2000);
+        } catch (err) {
+          // Save locally if backend fails
+          const stored = JSON.parse(localStorage.getItem('ndap_bug_reports') || '[]');
+          stored.push(bugReport);
+          localStorage.setItem('ndap_bug_reports', JSON.stringify(stored.slice(-50)));
+          formContent.innerHTML = '<div class="bug-success-msg" style="color:#f59e0b"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#f59e0b" stroke-width="2" style="margin-bottom:12px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><br>Saved locally (server unavailable)<br><span style="font-weight:400;font-size:0.85rem;color:#6b7280">Report saved and will be synced later.</span></div>';
+          setTimeout(closeModal, 2000);
+        }
+      });
+    })();
   </script>
 {% endblock %}

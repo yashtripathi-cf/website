@@ -1,6 +1,7 @@
 sentence,dcid
 Agriculture,dc/topic/Export;dc/topic/Inflation
 Amount of exports from India,Exports_EconomicActivity_ExportSourceIndia
+"Average Slum Household Size (State-wise, Census 2011)",NDAP_SlumHouseholdSize_Avg
 Average daily calorie intake per consumer unit in rural areas,Daily_Mean_DietaryIntake_Energy_Rural_AsAFractionOf_Count_ConsumerUnit
 Average daily calorie intake per consumer unit in urban areas,Daily_Mean_DietaryIntake_Energy_Urban_AsAFractionOf_Count_ConsumerUnit
 Average daily calorie intake per person in rural areas,Daily_Mean_DietaryIntake_Energy_Rural_AsAFractionOf_Count_Person
@@ -17,6 +18,7 @@ Average number of meals per household in rural area,Mean_Count_Meal_Rural_AsAFra
 Average number of meals per household in urban area,Mean_Count_Meal_Urban_AsAFractionOf_Count_Household
 Average number of meals per person in rural area,Mean_Count_Meal_Rural_AsAFractionOf_Count_Person
 Average number of meals per person in urban area,Mean_Count_Meal_Urban_AsAFractionOf_Count_Person
+"Birth Rate - Total (State-wise, SRS 2013)",NDAP_BirthRate_Total
 Census 2011 — Children 0-6 years (State-wise),NDAP_Census2011_Children_0_6
 Census 2011 — Female Literate Population (State-wise),NDAP_Census2011_Literate_Female
 Census 2011 — Female Population (State-wise),NDAP_Census2011_Population_Female
@@ -27,6 +29,7 @@ Census 2011 — Scheduled Caste Population (State-wise),NDAP_Census2011_SC_Popul
 Census 2011 — Scheduled Tribe Population (State-wise),NDAP_Census2011_ST_Population
 Census 2011 — Total Population (State-wise),NDAP_Census2011_Population_Total
 Census 2011 — Total Workers (State-wise),NDAP_Census2011_Workers_Total
+"Death Rate - Total (State-wise, SRS 2013)",NDAP_DeathRate_Total
 Dengue Cases (National),NDAP_DengueCases_National
 Dengue Cases (State-wise),NDAP_DengueCases_Statewise
 Dengue Deaths (National),NDAP_DengueDeaths_National
@@ -2662,6 +2665,7 @@ Growth Rate Exports Economic Activity: Traded Commodity Hscode/ 98 06,GrowthRate
 Growth Rate Exports Economic Activity: Traded Commodity Hscode/ 99,GrowthRate_Exports_EconomicActivity_CommoditiesNotSpecifiedAccordingToKind99
 Growth Rate Exports Economic Activity: Traded Commodity Hscode/ 99 93,GrowthRate_Exports_EconomicActivity_SpecialTransactionsAndCommoditiesNotClassified
 Growth Rate Exports Economic Activity: Traded Commodity Hscode/ 99 99,GrowthRate_Exports_EconomicActivity_CommoditiesNotSpecifiedAccordingToKind9999
+"Infant Mortality Rate - Total (State-wise, SRS 2013)",NDAP_InfantMortalityRate_Total
 MOSPI Nutritional Intake,dc/topic/NutritionalIntake
 Mean fixed capital per factory,Amount_EconomicActivity_Factory_FixedCapital_AsAFractionOf_Count_Establishment_Factory
 Mean gross value added per factory employee,Amount_EconomicActivity_Factory_GrossValueAdded_AsAFractionOf_Count_Person_Factory_TotalEngaged
@@ -2669,6 +2673,14 @@ Mean number of factory employees per factory,Count_Person_Factory_TotalEngaged_A
 Mean wages per factory employee,Wages_Worker_AsAFractionOf_Count_Worker
 Milk Production (National),NDAP_MilkProduction_National
 Milk Production (State-wise),NDAP_MilkProduction_Statewise
+NHM HSS-Rural Pool Allocation (Rs. Lakhs),NDAP_NHM_HSSR_Allocation
+NHM HSS-Urban Pool Allocation (Rs. Lakhs),NDAP_NHM_HSSU_Allocation
+NHM NCD Pool Allocation (Rs. Lakhs),NDAP_NHM_NCD_Allocation
+NHM NDCP Pool Allocation (Rs. Lakhs),NDAP_NHM_NDCP_Allocation
+NHM NTEP Allocation (Rs. Lakhs),NDAP_NHM_NTEP_Allocation
+NHM RCH Pool Allocation (Rs. Lakhs),NDAP_NHM_RCH_Allocation
+NHM Total ROP Allocation (Rs. Lakhs),NDAP_NHM_Total_Allocation
+"Natural Growth Rate - Total (State-wise, SRS 2013)",NDAP_NaturalGrowthRate_Total
 Net value added by factories,NetValueAdded_EconomicActivity_Factory
 Number of basic metals factories,Count_Establishment_Factory_BasicMetals
 Number of beverages factories,Count_Establishment_Factory_Beverages
@@ -4020,10 +4032,23 @@ Percentage of protein intake from other food sources in rural area,DietaryIntake
 Percentage of protein intake from other food sources in urban area,DietaryIntake_Protein_NIIOtherFood_Urban_AsAFractionOf_DietaryIntake_Protein_Urban
 Percentage of protein intake from pulses in rural area,DietaryIntake_Protein_Pulse_Rural_AsAFractionOf_DietaryIntake_Protein_Rural
 Percentage of protein intake from pulses in urban area,DietaryIntake_Protein_Pulse_Urban_AsAFractionOf_DietaryIntake_Protein_Urban
+"Population Density (State-wise, Census 2001-2011)",NDAP_PopulationDensity_Total
 Protein intake in rural area,DietaryIntake_Protein_Rural
 Protein intake in urban area,DietaryIntake_Protein_Urban
 Rate of change of export from India,GrowthRate_Exports_EconomicActivity_ExportSourceIndia
 Share of exports originating from India,Exports_EconomicActivity_ExportSourceIndia_AsAFractionOf_Export_EconomicActivity_ExportSourceIndia_WorldTotal
+"Slum Households - Total (State-wise, Census 2011)",NDAP_SlumHouseholds_Total
+"Slum Houses in Dilapidated Condition (State-wise, Census 2011)",NDAP_SlumHousing_Dilapidated
+"Slum Houses in Good Condition (State-wise, Census 2011)",NDAP_SlumHousing_Good
+"Slum Houses in Livable Condition (State-wise, Census 2011)",NDAP_SlumHousing_Livable
+"Slum Literacy Rate - Female (State-wise, Census 2011)",NDAP_SlumLiteracyRate_Female
+"Slum Literacy Rate - Male (State-wise, Census 2011)",NDAP_SlumLiteracyRate_Male
+"Slum Literacy Rate - Total (State-wise, Census 2011)",NDAP_SlumLiteracyRate_Total
+"Slum Population (State-wise, Census 2011)",NDAP_SlumPopulation_Statewise
+"Slum Population as % of Urban Population (State-wise, Census 2011)",NDAP_SlumPctOfUrban_Statewise
+"Slum Work Participation Rate - Female (State-wise, Census 2011)",NDAP_SlumWorkParticipation_Female
+"Slum Work Participation Rate - Male (State-wise, Census 2011)",NDAP_SlumWorkParticipation_Male
+"Slum Work Participation Rate - Total (State-wise, Census 2011)",NDAP_SlumWorkParticipation_Total
 TB Case Notifications (National),NDAP_TBNotifications_National
 Total compensation for factory workers,Amount_EconomicActivity_Factory_Emolument
 Total compensation for rural factory workers,Amount_EconomicActivity_Factory_Emolument_Rural

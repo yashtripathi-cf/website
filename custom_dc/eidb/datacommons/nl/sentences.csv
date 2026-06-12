@@ -4219,6 +4219,7 @@ Mean_Count_Meal_Rural_AsAFractionOf_Count_Household,Average number of meals per 
 Mean_Count_Meal_Rural_AsAFractionOf_Count_Person,Average number of meals per person in rural area
 Mean_Count_Meal_Urban_AsAFractionOf_Count_Household,Average number of meals per household in urban area
 Mean_Count_Meal_Urban_AsAFractionOf_Count_Person,Average number of meals per person in urban area
+NDAP_BirthRate_Total,"Birth Rate - Total (State-wise, SRS 2013)"
 NDAP_Census2011_Children_0_6,Census 2011 — Children 0-6 years (State-wise)
 NDAP_Census2011_Literate_Female,Census 2011 — Female Literate Population (State-wise)
 NDAP_Census2011_Literate_Male,Census 2011 — Male Literate Population (State-wise)
@@ -4229,13 +4230,37 @@ NDAP_Census2011_Population_Total,Census 2011 — Total Population (State-wise)
 NDAP_Census2011_SC_Population,Census 2011 — Scheduled Caste Population (State-wise)
 NDAP_Census2011_ST_Population,Census 2011 — Scheduled Tribe Population (State-wise)
 NDAP_Census2011_Workers_Total,Census 2011 — Total Workers (State-wise)
+NDAP_DeathRate_Total,"Death Rate - Total (State-wise, SRS 2013)"
 NDAP_DengueCases_National,Dengue Cases (National)
 NDAP_DengueCases_Statewise,Dengue Cases (State-wise)
 NDAP_DengueDeaths_National,Dengue Deaths (National)
 NDAP_DengueDeaths_Statewise,Dengue Deaths (State-wise)
+NDAP_InfantMortalityRate_Total,"Infant Mortality Rate - Total (State-wise, SRS 2013)"
 NDAP_MilkPCA_National,Per Capita Milk Availability
 NDAP_MilkProduction_National,Milk Production (National)
 NDAP_MilkProduction_Statewise,Milk Production (State-wise)
+NDAP_NHM_HSSR_Allocation,NHM HSS-Rural Pool Allocation (Rs. Lakhs)
+NDAP_NHM_HSSU_Allocation,NHM HSS-Urban Pool Allocation (Rs. Lakhs)
+NDAP_NHM_NCD_Allocation,NHM NCD Pool Allocation (Rs. Lakhs)
+NDAP_NHM_NDCP_Allocation,NHM NDCP Pool Allocation (Rs. Lakhs)
+NDAP_NHM_NTEP_Allocation,NHM NTEP Allocation (Rs. Lakhs)
+NDAP_NHM_RCH_Allocation,NHM RCH Pool Allocation (Rs. Lakhs)
+NDAP_NHM_Total_Allocation,NHM Total ROP Allocation (Rs. Lakhs)
+NDAP_NaturalGrowthRate_Total,"Natural Growth Rate - Total (State-wise, SRS 2013)"
+NDAP_PopulationDensity_Total,"Population Density (State-wise, Census 2001-2011)"
+NDAP_SlumHouseholdSize_Avg,"Average Slum Household Size (State-wise, Census 2011)"
+NDAP_SlumHouseholds_Total,"Slum Households - Total (State-wise, Census 2011)"
+NDAP_SlumHousing_Dilapidated,"Slum Houses in Dilapidated Condition (State-wise, Census 2011)"
+NDAP_SlumHousing_Good,"Slum Houses in Good Condition (State-wise, Census 2011)"
+NDAP_SlumHousing_Livable,"Slum Houses in Livable Condition (State-wise, Census 2011)"
+NDAP_SlumLiteracyRate_Female,"Slum Literacy Rate - Female (State-wise, Census 2011)"
+NDAP_SlumLiteracyRate_Male,"Slum Literacy Rate - Male (State-wise, Census 2011)"
+NDAP_SlumLiteracyRate_Total,"Slum Literacy Rate - Total (State-wise, Census 2011)"
+NDAP_SlumPctOfUrban_Statewise,"Slum Population as % of Urban Population (State-wise, Census 2011)"
+NDAP_SlumPopulation_Statewise,"Slum Population (State-wise, Census 2011)"
+NDAP_SlumWorkParticipation_Female,"Slum Work Participation Rate - Female (State-wise, Census 2011)"
+NDAP_SlumWorkParticipation_Male,"Slum Work Participation Rate - Male (State-wise, Census 2011)"
+NDAP_SlumWorkParticipation_Total,"Slum Work Participation Rate - Total (State-wise, Census 2011)"
 NDAP_TBNotifications_National,TB Case Notifications (National)
 NDAP_UnemploymentRate_Female,"Unemployment Rate (Female, Usual Status)"
 NDAP_UnemploymentRate_Male,"Unemployment Rate (Male, Usual Status)"

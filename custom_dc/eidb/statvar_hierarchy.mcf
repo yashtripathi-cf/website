@@ -354,3 +354,114 @@ memberOf: dcid:dc/g/NDAP_Census2011
 
 Node: dcid:NDAP_Census2011_Children_0_6
 memberOf: dcid:dc/g/NDAP_Census2011
+
+# ============================================================
+# NDAP Slums (NBO Compendium 2015 / Census 2011)
+# ============================================================
+
+Node: dcid:dc/g/NDAP_Slums
+typeOf: dcs:StatVarGroup
+name: "Slums in India (Census 2011)"
+specializationOf: dcid:dc/g/Root
+
+Node: dcid:NDAP_SlumPopulation_Statewise
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumPctOfUrban_Statewise
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumLiteracyRate_Total
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumLiteracyRate_Male
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumLiteracyRate_Female
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumWorkParticipation_Total
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumWorkParticipation_Male
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumWorkParticipation_Female
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHouseholds_Total
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHouseholdSize_Avg
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHousing_Good
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHousing_Livable
+memberOf: dcid:dc/g/NDAP_Slums
+
+Node: dcid:NDAP_SlumHousing_Dilapidated
+memberOf: dcid:dc/g/NDAP_Slums
+
+# ============================================================
+# NDAP Vital Statistics (SRS 2013)
+# ============================================================
+
+Node: dcid:dc/g/NDAP_VitalStats
+typeOf: dcs:StatVarGroup
+name: "Vital Statistics (Birth/Death/IMR)"
+specializationOf: dcid:dc/g/Root
+
+Node: dcid:NDAP_BirthRate_Total
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+Node: dcid:NDAP_DeathRate_Total
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+Node: dcid:NDAP_NaturalGrowthRate_Total
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+Node: dcid:NDAP_InfantMortalityRate_Total
+memberOf: dcid:dc/g/NDAP_VitalStats
+
+# ============================================================
+# NDAP Demographics (Census)
+# ============================================================
+
+Node: dcid:dc/g/NDAP_Demographics
+typeOf: dcs:StatVarGroup
+name: "Population Demographics"
+specializationOf: dcid:dc/g/Root
+
+Node: dcid:NDAP_PopulationDensity_Total
+memberOf: dcid:dc/g/NDAP_Demographics
+
+# ============================================================
+# NDAP National Health Mission (NHM)
+# ============================================================
+
+Node: dcid:dc/g/NDAP_NHM
+typeOf: dcs:StatVarGroup
+name: "National Health Mission (NHM) Allocations"
+specializationOf: dcid:dc/g/Root
+
+Node: dcid:NDAP_NHM_RCH_Allocation
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_NDCP_Allocation
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_NCD_Allocation
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_HSSU_Allocation
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_HSSR_Allocation
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_Total_Allocation
+memberOf: dcid:dc/g/NDAP_NHM
+
+Node: dcid:NDAP_NHM_NTEP_Allocation
+memberOf: dcid:dc/g/NDAP_NHM
